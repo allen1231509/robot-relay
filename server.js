@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const http = require('http');
+
 const PORT = process.env.PORT || 8080;
 
 const server = http.createServer((req, res) => {
@@ -34,18 +35,24 @@ wss.on('connection', (ws, req) => {
     if (type === 'robot') {
         robotSocket = ws;
         console.log('✅ Robot conectado');
+
+        // Notificar a todos los controladores que el robot está disponible
         controllers.forEach(ctrl => {
             if (ctrl.readyState === WebSocket.OPEN) {
                 ctrl.send(JSON.stringify({ status: 'robot_connected' }));
             }
         });
+
+        // Robot → controladores
         ws.on('message', (data) => {
+            const message = data.toString(); // ← fix: convertir Buffer a String
             controllers.forEach(ctrl => {
                 if (ctrl.readyState === WebSocket.OPEN) {
-                    ctrl.send(data);
+                    ctrl.send(message);
                 }
             });
         });
+
         ws.on('close', () => {
             console.log('❌ Robot desconectado');
             robotSocket = null;
@@ -55,27 +62,35 @@ wss.on('connection', (ws, req) => {
                 }
             });
         });
+
         ws.on('error', (err) => console.error('Robot WS error:', err.message));
 
     } else if (type === 'controller') {
         controllers.add(ws);
         console.log(`📱 Controlador conectado (total: ${controllers.size})`);
+
+        // Informar al controlador si el robot ya está conectado
         if (robotSocket && robotSocket.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ status: 'robot_connected' }));
         } else {
             ws.send(JSON.stringify({ status: 'robot_disconnected' }));
         }
+
+        // Controlador → robot
         ws.on('message', (data) => {
+            const message = data.toString(); // ← fix: convertir Buffer a String
             if (robotSocket && robotSocket.readyState === WebSocket.OPEN) {
-                robotSocket.send(data);
+                robotSocket.send(message);
             } else {
                 ws.send(JSON.stringify({ status: 'error', message: 'Robot no conectado' }));
             }
         });
+
         ws.on('close', () => {
             controllers.delete(ws);
             console.log(`📱 Controlador desconectado (total: ${controllers.size})`);
         });
+
         ws.on('error', (err) => console.error('Controller WS error:', err.message));
 
     } else {
