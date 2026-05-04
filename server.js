@@ -2,7 +2,7 @@ const WebSocket = require('ws');
 const http = require('http');
 
 const PORT = process.env.PORT || 8080;
-const ADMIN_SECRET = process.env.ADMIN_SECRET || '1Ep#5Shk'; // ← agregar ADMIN_SECRET en Render
+const ADMIN_SECRET = process.env.ADMIN_SECRET || '1Ep5Shk'; // ← agregar ADMIN_SECRET en Render
 
 // ── Log de eventos ────────────────────────────────────────
 const eventLog = [];
