@@ -6,262 +6,107 @@
     <title>Robot Controller</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
-
         :root {
-            --bg: #0a0a14;
-            --card: #12121f;
-            --border: #1e1e35;
-            --green: #00ff88;
-            --red: #ff4455;
-            --blue: #4488ff;
-            --yellow: #ffcc00;
-            --text: #ffffff;
-            --muted: #666688;
+            --bg: #0a0a14; --card: #12121f; --border: #1e1e35;
+            --green: #00ff88; --red: #ff4455; --blue: #4488ff;
+            --yellow: #ffcc00; --text: #ffffff; --muted: #666688;
         }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Arial', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ── Pantalla de conexión ── */
-        #connectScreen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
-            padding: 32px;
-        }
+        body { background: var(--bg); color: var(--text); font-family: 'Arial', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        #connectScreen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 32px; }
         .robot-icon { font-size: 80px; animation: pulse 2s infinite; }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
         .connect-title { font-size: 28px; font-weight: bold; color: var(--green); }
         .connect-subtitle { font-size: 14px; color: var(--muted); text-align: center; }
-        .connect-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            width: 100%;
-            max-width: 360px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .connect-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; }
         .connect-card label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Tabs de modo conexión */
         .mode-tabs { display: flex; gap: 8px; }
-        .mode-tab {
-            flex: 1; padding: 10px; border-radius: 8px;
-            border: 1px solid var(--border); background: var(--bg);
-            color: var(--muted); cursor: pointer; font-size: 12px;
-            text-align: center;
-        }
+        .mode-tab { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); cursor: pointer; font-size: 12px; text-align: center; }
         .mode-tab.active { border-color: var(--green); color: var(--green); background: #00ff8811; }
-
         .conn-field { display: flex; flex-direction: column; gap: 6px; }
-        input[type=text], input[type=password] {
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
-            font-size: 16px;
-            width: 100%;
-        }
+        input[type=text], input[type=password] { padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 16px; width: 100%; }
         input:focus { outline: none; border-color: var(--green); }
-        #connectBtn {
-            padding: 16px; border-radius: 10px; border: none;
-            background: var(--green); color: #000;
-            font-size: 18px; font-weight: bold; cursor: pointer; width: 100%;
-        }
+        #connectBtn { padding: 16px; border-radius: 10px; border: none; background: var(--green); color: #000; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; }
         #connectBtn:active { opacity: 0.8; }
-        .conn-status {
-            font-size: 12px; text-align: center; color: var(--muted);
-            min-height: 18px;
-        }
-
-        /* ── App principal ── */
+        .conn-status { font-size: 12px; text-align: center; color: var(--muted); min-height: 18px; }
         #appScreen { display: none; flex-direction: column; flex: 1; }
-
-        #header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 16px; background: var(--card);
-            border-bottom: 1px solid var(--border);
-        }
+        #header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
         #headerLeft { display: flex; align-items: center; gap: 10px; }
         #headerTitle { font-size: 16px; font-weight: bold; color: var(--green); }
         #headerSub { font-size: 10px; color: var(--muted); }
-        #batteryBadge {
-            display: flex; align-items: center; gap: 6px;
-            background: var(--bg); border: 1px solid var(--border);
-            border-radius: 20px; padding: 6px 12px; font-size: 13px;
-        }
-        #disconnectBtn {
-            padding: 6px 12px; border-radius: 8px;
-            border: 1px solid var(--red); background: transparent;
-            color: var(--red); cursor: pointer; font-size: 12px;
-        }
-
-        /* Robot status banner */
-        #robotBanner {
-            padding: 8px 16px; font-size: 12px; text-align: center;
-            background: #ff445522; color: var(--red);
-            border-bottom: 1px solid #ff445544;
-            display: none;
-        }
+        #batteryBadge { display: flex; align-items: center; gap: 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 13px; }
+        #disconnectBtn { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--red); background: transparent; color: var(--red); cursor: pointer; font-size: 12px; }
+        #robotBanner { padding: 8px 16px; font-size: 12px; text-align: center; background: #ff445522; color: var(--red); border-bottom: 1px solid #ff445544; display: none; }
         #robotBanner.connected { background: #00ff8811; color: var(--green); border-color: #00ff8822; }
-
         #tabs { display: flex; background: var(--card); border-bottom: 1px solid var(--border); }
-        .tab {
-            flex: 1; padding: 10px 2px; text-align: center; cursor: pointer;
-            font-size: 10px; color: var(--muted);
-            border-bottom: 2px solid transparent; transition: all 0.2s;
-        }
+        .tab { flex: 1; padding: 10px 2px; text-align: center; cursor: pointer; font-size: 10px; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab.active { color: var(--green); border-bottom-color: var(--green); }
         .tab-icon { font-size: 16px; display: block; }
-
         #tabContent { flex: 1; overflow-y: auto; padding: 16px; }
         .tabPanel { display: none; flex-direction: column; gap: 16px; }
         .tabPanel.active { display: flex; }
-
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
         .card-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-
-        #dpad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 72px);
-            gap: 8px;
-            max-width: 280px;
-            margin: 0 auto;
-        }
-        .dpad-btn {
-            border-radius: 12px; border: 1px solid var(--border);
-            background: var(--bg); color: var(--text); font-size: 28px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            user-select: none; -webkit-user-select: none;
-        }
+        #dpad { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 72px); gap: 8px; max-width: 280px; margin: 0 auto; }
+        .dpad-btn { border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; }
         .dpad-btn:active { background: var(--green); color: #000; border-color: var(--green); }
         .dpad-empty { background: transparent !important; border: none !important; }
-
         #speedPresets { display: flex; gap: 8px; margin-bottom: 12px; }
-        .preset-btn {
-            flex: 1; padding: 10px 4px; border-radius: 8px;
-            border: 1px solid var(--border); background: var(--bg);
-            color: var(--text); cursor: pointer; font-size: 12px;
-        }
+        .preset-btn { flex: 1; padding: 10px 4px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; font-size: 12px; }
         .preset-btn.active { background: var(--green); color: #000; border-color: var(--green); font-weight: bold; }
         #speedSliderRow { display: flex; align-items: center; gap: 8px; }
         #speedSlider { flex: 1; accent-color: var(--green); }
         #speedValue { font-size: 13px; color: var(--green); min-width: 36px; text-align: right; }
-
-        #stopBtn {
-            width: 100%; padding: 18px; border-radius: 12px; border: none;
-            background: var(--red); color: #fff; font-size: 22px;
-            font-weight: bold; cursor: pointer; letter-spacing: 2px;
-        }
+        #stopBtn { width: 100%; padding: 18px; border-radius: 12px; border: none; background: var(--red); color: #fff; font-size: 22px; font-weight: bold; cursor: pointer; letter-spacing: 2px; }
         #stopBtn:active { opacity: 0.8; }
-
         .input-row { display: flex; gap: 8px; }
-        .text-input {
-            flex: 1; padding: 12px; border-radius: 10px;
-            border: 1px solid var(--border); background: var(--bg);
-            color: var(--text); font-size: 15px;
-        }
+        .text-input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 15px; }
         .text-input:focus { outline: none; border-color: var(--green); }
-        .action-btn {
-            padding: 12px 16px; border-radius: 10px; border: none;
-            background: var(--green); color: #000; font-weight: bold;
-            cursor: pointer; font-size: 14px; white-space: nowrap;
-        }
+        .action-btn { padding: 12px 16px; border-radius: 10px; border: none; background: var(--green); color: #000; font-weight: bold; cursor: pointer; font-size: 14px; white-space: nowrap; }
         .action-btn:active { opacity: 0.8; }
         .action-btn.blue { background: var(--blue); color: #fff; }
         .action-btn.yellow { background: var(--yellow); color: #000; }
         .action-btn.red { background: var(--red); color: #fff; }
-
         #placesList { display: flex; flex-wrap: wrap; gap: 8px; }
-        .place-btn {
-            padding: 10px 16px; border-radius: 8px;
-            border: 1px solid var(--green); background: transparent;
-            color: var(--green); cursor: pointer; font-size: 14px;
-        }
+        .place-btn { padding: 10px 16px; border-radius: 8px; border: 1px solid var(--green); background: transparent; color: var(--green); cursor: pointer; font-size: 14px; }
         .place-btn:active { background: var(--green); color: #000; }
-
-        .stat-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 0; border-bottom: 1px solid var(--border);
-        }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
         .stat-row:last-child { border-bottom: none; }
         .stat-label { font-size: 13px; color: var(--muted); }
         .stat-value { font-size: 14px; font-weight: bold; }
         #batteryBar { height: 8px; border-radius: 4px; background: var(--border); margin-top: 8px; overflow: hidden; }
         #batteryFill { height: 100%; border-radius: 4px; background: var(--green); transition: width 0.5s; }
-
-        /* Cámara */
-        #cameraContainer {
-            width: 100%; background: #000; border-radius: 12px;
-            overflow: hidden; aspect-ratio: 4/3;
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-        }
+        #cameraContainer { width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; position: relative; }
         #cameraImg { width: 100%; height: 100%; object-fit: contain; display: none; }
-        #cameraPlaceholder {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 12px; color: var(--muted); font-size: 14px;
-        }
+        #cameraPlaceholder { display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; }
         #cameraPlaceholder span { font-size: 40px; }
-        #cameraFps {
-            position: absolute; top: 8px; right: 8px;
-            background: rgba(0,0,0,0.6); color: var(--green);
-            font-size: 11px; padding: 3px 8px; border-radius: 4px;
-            font-family: monospace; display: none;
-        }
-        #cameraLatency {
-            position: absolute; top: 8px; left: 8px;
-            background: rgba(0,0,0,0.6); color: var(--yellow);
-            font-size: 11px; padding: 3px 8px; border-radius: 4px;
-            font-family: monospace; display: none;
-        }
+        #cameraFps { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: var(--green); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-family: monospace; display: none; }
+        #cameraLatency { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: var(--yellow); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-family: monospace; display: none; }
         .camera-controls { display: flex; gap: 8px; }
-        .camera-controls button {
-            flex: 1; padding: 12px; border-radius: 10px; border: none;
-            font-weight: bold; cursor: pointer; font-size: 14px;
-        }
+        .camera-controls button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
         #btnStartCamera { background: var(--green); color: #000; }
         #btnStartCamera:active { opacity: 0.8; }
         #btnStopCamera { background: var(--red); color: #fff; display: none; }
         #btnStopCamera:active { opacity: 0.8; }
-
-        #cameraDpad {
-            display: grid;
-            grid-template-columns: repeat(3, 56px);
-            grid-template-rows: repeat(3, 56px);
-            gap: 6px; margin: 0 auto;
-        }
-        .cdpad-btn {
-            border-radius: 10px; border: 1px solid var(--border);
-            background: rgba(18,18,31,0.85); color: var(--text); font-size: 22px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            user-select: none; -webkit-user-select: none;
-        }
+        #btnTakePhoto { background: var(--blue); color: #fff; }
+        #btnTakePhoto:active { opacity: 0.8; }
+        #cameraDpad { display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(3, 56px); gap: 6px; margin: 0 auto; }
+        .cdpad-btn { border-radius: 10px; border: 1px solid var(--border); background: rgba(18,18,31,0.85); color: var(--text); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; }
         .cdpad-btn:active { background: var(--green); color: #000; border-color: var(--green); }
 
-        #feedback {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: #222; border: 1px solid var(--border); border-radius: 8px;
-            padding: 10px 20px; font-size: 13px; color: var(--green);
-            display: none; z-index: 999; white-space: nowrap;
-        }
+        /* ── Foto capturada ── */
+        #photoSection { display: none; flex-direction: column; gap: 10px; }
+        #photoSection.visible { display: flex; }
+        #photoPreviewContainer { width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; position: relative; }
+        #photoPreview { width: 100%; height: 100%; object-fit: contain; }
+        #photoTimestamp { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.65); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-family: monospace; }
+        #photoActions { display: flex; gap: 8px; }
+        #btnDownloadPhoto { flex: 1; padding: 12px; border-radius: 10px; border: none; background: var(--green); color: #000; font-weight: bold; cursor: pointer; font-size: 14px; }
+        #btnDownloadPhoto:active { opacity: 0.8; }
+        #btnClearPhoto { padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 14px; }
+        #btnClearPhoto:active { background: var(--border); }
+        #photoLoading { text-align: center; color: var(--muted); font-size: 13px; padding: 16px; display: none; }
+
+        #feedback { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #222; border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--green); display: none; z-index: 999; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -271,23 +116,17 @@
     <div class="robot-icon">🤖</div>
     <div class="connect-title">Robot Controller</div>
     <div class="connect-subtitle">Elige cómo conectarte al robot</div>
-
     <div class="connect-card">
-        <!-- Modo: Local o Remoto -->
         <div class="mode-tabs">
             <div class="mode-tab active" onclick="setMode('local', this)">📶 WiFi Local</div>
             <div class="mode-tab" onclick="setMode('remote', this)">🌐 Remoto</div>
         </div>
-
-        <!-- Modo local: IP directa -->
         <div id="localFields">
             <div class="conn-field">
                 <label>IP del robot</label>
                 <input id="ipInput" type="text" placeholder="192.168.1.XX" inputmode="decimal">
             </div>
         </div>
-
-        <!-- Modo remoto: relay -->
         <div id="remoteFields" style="display:none; flex-direction:column; gap:10px;">
             <div class="conn-field">
                 <label>URL del servidor relay</label>
@@ -298,7 +137,6 @@
                 <input id="relaySecret" type="password" placeholder="tu clave secreta">
             </div>
         </div>
-
         <div class="conn-status" id="connStatus"></div>
         <button id="connectBtn" onclick="connect()">Conectar →</button>
     </div>
@@ -306,7 +144,6 @@
 
 <!-- ── App principal ── -->
 <div id="appScreen">
-
     <div id="header">
         <div id="headerLeft">
             <span>🤖</span>
@@ -321,10 +158,7 @@
         </div>
         <button id="disconnectBtn" onclick="disconnect()">✕ Salir</button>
     </div>
-
-    <!-- Banner estado del robot (solo en modo remoto) -->
     <div id="robotBanner">⚠️ Robot no conectado al relay</div>
-
     <div id="tabs">
         <div class="tab active" onclick="switchTab('control')"><span class="tab-icon">🕹️</span>Control</div>
         <div class="tab" onclick="switchTab('camera')"><span class="tab-icon">📷</span>Cámara</div>
@@ -385,7 +219,23 @@
             <div class="camera-controls">
                 <button id="btnStartCamera" onclick="startCamera()">▶ Iniciar cámara</button>
                 <button id="btnStopCamera" onclick="stopCamera()">⏹ Detener</button>
+                <button id="btnTakePhoto" onclick="takePhoto()">📸 Foto</button>
             </div>
+
+            <!-- ── Sección foto capturada ── -->
+            <div id="photoLoading">📸 Capturando foto...</div>
+            <div id="photoSection">
+                <div class="card-title" style="margin-bottom:0">📸 Foto capturada</div>
+                <div id="photoPreviewContainer">
+                    <img id="photoPreview" alt="Foto capturada">
+                    <div id="photoTimestamp"></div>
+                </div>
+                <div id="photoActions">
+                    <button id="btnDownloadPhoto" onclick="downloadPhoto()">⬇️ Descargar foto</button>
+                    <button id="btnClearPhoto" onclick="clearPhoto()">✕ Cerrar</button>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-title">🎮 Mover mientras ves</div>
                 <div id="cameraDpad">
@@ -469,22 +319,14 @@
 <div id="feedback"></div>
 
 <script>
-    // ── Config relay ───────────────────────────────────────
     const RELAY_URL    = 'robot-relay-34o6.onrender.com';
     const RELAY_SECRET = 'mirobotclave2024';
 
-    let ws = null;
-    let connected = false;
-    let isRemoteMode = false;
-    let robotOnline = false;
-    let positionInterval = null;
-    let batteryInterval = null;
-    let cameraActive = false;
-    let fpsCounter = 0;
-    let fpsLastTime = Date.now();
-    let lastFrameTime = 0;
-    let currentSpeed = 0.30;
-    let currentTurnSpeed = 30.0;
+    let ws = null, connected = false, isRemoteMode = false, robotOnline = false;
+    let positionInterval = null, batteryInterval = null;
+    let cameraActive = false, fpsCounter = 0, fpsLastTime = Date.now();
+    let lastFrameTime = 0, currentSpeed = 0.30, currentTurnSpeed = 30.0;
+    let lastPhotoBase64 = null;
 
     const presets = {
         slow:   { linear: 0.15, turn: 15.0 },
@@ -492,7 +334,6 @@
         fast:   { linear: 0.60, turn: 45.0 }
     };
 
-    // ── Modo conexión ──────────────────────────────────────
     function setMode(mode, el) {
         isRemoteMode = mode === 'remote';
         document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -501,7 +342,6 @@
         document.getElementById('remoteFields').style.display = isRemoteMode ? 'flex' : 'none';
     }
 
-    // ── Tabs ───────────────────────────────────────────────
     function switchTab(name) {
         const tabNames = ['control', 'camera', 'announce', 'places', 'status'];
         document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabNames[i] === name));
@@ -509,11 +349,9 @@
         document.getElementById(`tab-${name}`).classList.add('active');
     }
 
-    // ── Velocidad ──────────────────────────────────────────
     function setPreset(name, e) {
         const p = presets[name];
-        currentSpeed = p.linear;
-        currentTurnSpeed = p.turn;
+        currentSpeed = p.linear; currentTurnSpeed = p.turn;
         document.getElementById('speedSlider').value = Math.round(p.linear * 100);
         document.getElementById('speedValue').textContent = p.linear.toFixed(2);
         document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
@@ -521,88 +359,55 @@
     }
 
     function onSliderChange(val) {
-        currentSpeed = val / 100;
-        currentTurnSpeed = currentSpeed * 100;
+        currentSpeed = val / 100; currentTurnSpeed = currentSpeed * 100;
         document.getElementById('speedValue').textContent = currentSpeed.toFixed(2);
         document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
     }
 
-    // ── Conexión ───────────────────────────────────────────
     function connect() {
         const btn = document.getElementById('connectBtn');
         const status = document.getElementById('connStatus');
-        btn.textContent = 'Conectando...';
-        status.textContent = '';
-
+        btn.textContent = 'Conectando...'; status.textContent = '';
         let wsUrl;
         if (isRemoteMode) {
             const url    = document.getElementById('relayUrl').value.trim() || RELAY_URL;
             const secret = document.getElementById('relaySecret').value.trim() || RELAY_SECRET;
             wsUrl = `wss://${url}?type=controller&secret=${secret}`;
-            localStorage.setItem('relayUrl', url);
-            localStorage.setItem('relaySecret', secret);
+            localStorage.setItem('relayUrl', url); localStorage.setItem('relaySecret', secret);
         } else {
             const ip = document.getElementById('ipInput').value.trim();
             if (!ip) { alert('Ingresa la IP del robot'); btn.textContent = 'Conectar →'; return; }
             wsUrl = `ws://${ip}:8080`;
             localStorage.setItem('robotIp', ip);
         }
-
         ws = new WebSocket(wsUrl);
-
         ws.onopen = () => {
             connected = true;
             document.getElementById('connectScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'flex';
             document.getElementById('headerSub').textContent = isRemoteMode ? '🌐 Modo remoto' : '📶 WiFi local';
-
-            if (isRemoteMode) {
-                document.getElementById('robotBanner').style.display = 'block';
-                updateRobotBanner(false);
-            }
-
-            loadPlaces();
-            startUpdates();
+            if (isRemoteMode) { document.getElementById('robotBanner').style.display = 'block'; updateRobotBanner(false); }
+            loadPlaces(); startUpdates();
         };
-
         ws.onclose = () => {
-            connected = false;
-            cameraActive = false;
+            connected = false; cameraActive = false;
             document.getElementById('connectScreen').style.display = 'flex';
             document.getElementById('appScreen').style.display = 'none';
             document.getElementById('robotBanner').style.display = 'none';
             btn.textContent = 'Conectar →';
-            resetCameraUI();
-            stopUpdates();
+            resetCameraUI(); stopUpdates();
             showFeedback('❌ Desconectado', 'red');
         };
-
-        ws.onerror = () => {
-            btn.textContent = 'Conectar →';
-            status.textContent = '❌ No se pudo conectar';
-        };
-
+        ws.onerror = () => { btn.textContent = 'Conectar →'; status.textContent = '❌ No se pudo conectar'; };
         ws.onmessage = (e) => handleMessage(JSON.parse(e.data));
     }
 
-    function disconnect() {
-        stopCamera();
-        sendStop();
-        if (ws) ws.close();
-    }
+    function disconnect() { stopCamera(); sendStop(); if (ws) ws.close(); }
 
-    // ── Mensajes ───────────────────────────────────────────
     function handleMessage(data) {
         switch(data.action ?? data.status) {
-            case 'robot_connected':
-                robotOnline = true;
-                updateRobotBanner(true);
-                loadPlaces();
-                break;
-            case 'robot_disconnected':
-                robotOnline = false;
-                updateRobotBanner(false);
-                break;
+            case 'robot_connected':    robotOnline = true; updateRobotBanner(true); loadPlaces(); break;
+            case 'robot_disconnected': robotOnline = false; updateRobotBanner(false); break;
             case 'getPlaces':    renderPlaces(data.data); break;
             case 'getPosition':  updatePosition(data.data); break;
             case 'getBattery':   updateBattery(data.data); break;
@@ -616,15 +421,12 @@
             case 'stopCamera':   resetCameraUI(); break;
             case 'cameraFrame':  renderFrame(data.data); break;
             case 'cameraError':  handleCameraError(data.error); break;
-            case 'connected':    // handshake local
-                robotOnline = true;
-                break;
+            case 'takePhoto':    renderPhoto(data.data); break;  // ← NUEVO
+            case 'connected':    robotOnline = true; break;
         }
     }
 
-    function send(obj) {
-        if (ws && connected) ws.send(JSON.stringify(obj));
-    }
+    function send(obj) { if (ws && connected) ws.send(JSON.stringify(obj)); }
 
     function updateRobotBanner(online) {
         const banner = document.getElementById('robotBanner');
@@ -634,7 +436,6 @@
         banner.textContent = online ? '✅ Robot conectado al relay' : '⚠️ Robot no conectado al relay';
     }
 
-    // ── D-Pad ──────────────────────────────────────────────
     function setupDpad() {
         const buttons = {
             btnUp:    () => ({ action: 'forward',   speed: currentSpeed }),
@@ -643,7 +444,6 @@
             btnRight: () => ({ action: 'turnRight', speed: currentTurnSpeed, angle: 5.0 })
         };
         bindDpadButtons(buttons);
-
         const cameraButtons = {
             cbtnUp:    () => ({ action: 'forward',   speed: currentSpeed }),
             cbtnDown:  () => ({ action: 'backward',  speed: currentSpeed }),
@@ -658,16 +458,8 @@
             const btn = document.getElementById(id);
             if (!btn) return;
             let interval = null;
-            const start = (e) => {
-                e.preventDefault();
-                send(getCmd());
-                interval = setInterval(() => send(getCmd()), 150);
-            };
-            const stop = (e) => {
-                e.preventDefault();
-                clearInterval(interval);
-                send({ action: 'stop' });
-            };
+            const start = (e) => { e.preventDefault(); send(getCmd()); interval = setInterval(() => send(getCmd()), 150); };
+            const stop  = (e) => { e.preventDefault(); clearInterval(interval); send({ action: 'stop' }); };
             btn.addEventListener('mousedown', start);
             btn.addEventListener('mouseup', stop);
             btn.addEventListener('mouseleave', stop);
@@ -687,8 +479,7 @@
         document.getElementById('btnStopCamera').style.display = 'block';
         document.getElementById('cameraFps').style.display = 'block';
         document.getElementById('cameraLatency').style.display = 'block';
-        fpsCounter = 0;
-        fpsLastTime = Date.now();
+        fpsCounter = 0; fpsLastTime = Date.now();
     }
 
     function stopCamera() {
@@ -721,17 +512,50 @@
         const elapsed = now - fpsLastTime;
         if (elapsed >= 1000) {
             document.getElementById('cameraFps').textContent = `${Math.round((fpsCounter * 1000) / elapsed)} fps`;
-            fpsCounter = 0;
-            fpsLastTime = now;
+            fpsCounter = 0; fpsLastTime = now;
         }
-        if (latency > 0 && latency < 5000) {
-            document.getElementById('cameraLatency').textContent = `${latency} ms`;
-        }
+        if (latency > 0 && latency < 5000) document.getElementById('cameraLatency').textContent = `${latency} ms`;
     }
 
     function handleCameraError(error) {
         showFeedback('❌ Error de cámara: ' + error, 'red');
         resetCameraUI();
+    }
+
+    // ── Foto ────────────────────────────────────────────────
+    function takePhoto() {
+        document.getElementById('photoLoading').style.display = 'block';
+        document.getElementById('photoSection').classList.remove('visible');
+        send({ action: 'takePhoto' });
+        showFeedback('📸 Capturando foto...');
+    }
+
+    function renderPhoto(base64) {
+        lastPhotoBase64 = base64;
+        document.getElementById('photoLoading').style.display = 'none';
+        document.getElementById('photoPreview').src = 'data:image/jpeg;base64,' + base64;
+        const now = new Date();
+        document.getElementById('photoTimestamp').textContent =
+            now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        document.getElementById('photoSection').classList.add('visible');
+        showFeedback('✅ Foto capturada');
+    }
+
+    function downloadPhoto() {
+        if (!lastPhotoBase64) return;
+        const a = document.createElement('a');
+        const now = new Date();
+        const filename = `zoxirobit_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}.jpg`;
+        a.href = 'data:image/jpeg;base64,' + lastPhotoBase64;
+        a.download = filename;
+        a.click();
+        showFeedback('⬇️ Foto descargada');
+    }
+
+    function clearPhoto() {
+        lastPhotoBase64 = null;
+        document.getElementById('photoSection').classList.remove('visible');
+        document.getElementById('photoLoading').style.display = 'none';
     }
 
     // ── TTS ────────────────────────────────────────────────
@@ -742,7 +566,6 @@
         document.getElementById('ttsInput').value = '';
     }
 
-    // ── Anuncio ────────────────────────────────────────────
     function sendAnnounce() {
         const dest = document.getElementById('announcePlace').value;
         const text = document.getElementById('announceText').value.trim();
@@ -752,11 +575,7 @@
         showFeedback('🚀 Enviando robot...');
     }
 
-    // ── Lugares ────────────────────────────────────────────
-    function loadPlaces() {
-        send({ action: 'getPlaces' });
-        send({ action: 'getMapName' });
-    }
+    function loadPlaces() { send({ action: 'getPlaces' }); send({ action: 'getMapName' }); }
 
     function renderPlaces(places) {
         const container = document.getElementById('placesList');
@@ -769,13 +588,11 @@
         select.innerHTML = '<option value="">Selecciona un lugar...</option>';
         places.forEach(place => {
             const btn = document.createElement('button');
-            btn.className = 'place-btn';
-            btn.textContent = place.name;
+            btn.className = 'place-btn'; btn.textContent = place.name;
             btn.onclick = () => { send({ action: 'navigate', destination: place.name }); showFeedback(`🚀 Navegando a ${place.name}...`); };
             container.appendChild(btn);
             const opt = document.createElement('option');
-            opt.value = place.name;
-            opt.textContent = place.name;
+            opt.value = place.name; opt.textContent = place.name;
             select.appendChild(opt);
         });
     }
@@ -787,22 +604,15 @@
         document.getElementById('savePointInput').value = '';
     }
 
-    function stopNav() {
-        send({ action: 'stopNavigation' });
-        showFeedback('⏹️ Navegación detenida');
-    }
+    function stopNav() { send({ action: 'stopNavigation' }); showFeedback('⏹️ Navegación detenida'); }
 
-    // ── Estado ─────────────────────────────────────────────
     function startUpdates() {
         positionInterval = setInterval(() => send({ action: 'getPosition' }), 2000);
         batteryInterval  = setInterval(() => send({ action: 'getBattery' }), 10000);
         send({ action: 'getBattery' });
     }
 
-    function stopUpdates() {
-        clearInterval(positionInterval);
-        clearInterval(batteryInterval);
-    }
+    function stopUpdates() { clearInterval(positionInterval); clearInterval(batteryInterval); }
 
     function updatePosition(pos) {
         if (!pos) return;
@@ -821,26 +631,17 @@
         document.getElementById('batteryFill').style.background = level > 50 ? 'var(--green)' : level > 20 ? 'var(--yellow)' : 'var(--red)';
     }
 
-    function updateMapName(name) {
-        document.getElementById('mapName').textContent = name ?? '--';
-    }
+    function updateMapName(name) { document.getElementById('mapName').textContent = name ?? '--'; }
+    function goCharge() { send({ action: 'charge' }); showFeedback('⚡ Enviando a cargar...'); }
 
-    function goCharge() {
-        send({ action: 'charge' });
-        showFeedback('⚡ Enviando a cargar...');
-    }
-
-    // ── Feedback ───────────────────────────────────────────
     function showFeedback(msg, color = 'green') {
         const el = document.getElementById('feedback');
-        el.textContent = msg;
-        el.style.display = 'block';
+        el.textContent = msg; el.style.display = 'block';
         el.style.color = color === 'red' ? 'var(--red)' : color === 'yellow' ? 'var(--yellow)' : 'var(--green)';
         clearTimeout(el._timeout);
         el._timeout = setTimeout(() => el.style.display = 'none', 2500);
     }
 
-    // ── Init ───────────────────────────────────────────────
     window.onload = () => {
         const savedIp     = localStorage.getItem('robotIp');
         const savedUrl    = localStorage.getItem('relayUrl');
