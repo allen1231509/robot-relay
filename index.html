@@ -106,6 +106,20 @@
         #btnClearPhoto:active { background: var(--border); }
         #photoLoading { text-align: center; color: var(--muted); font-size: 13px; padding: 16px; display: none; }
 
+        /* ── Contador de personas ── */
+        #personBadge {
+            display: none; align-items: center; gap: 6px;
+            background: rgba(255,68,85,0.15); border: 1px solid rgba(255,68,85,0.4);
+            border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 700;
+            color: var(--red); backdrop-filter: blur(10px);
+            animation: personPulse 2s ease-in-out infinite;
+        }
+        #personBadge.visible { display: flex; }
+        #personBadge.zero { background: rgba(100,100,136,0.15); border-color: rgba(100,100,136,0.3); color: var(--muted); animation: none; }
+        @keyframes personPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,68,85,0.4)} 50%{box-shadow:0 0 0 8px rgba(255,68,85,0)} }
+        #personDot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+        #personBadge.zero #personDot { background: var(--muted); }
+
         #feedback { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #222; border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--green); display: none; z-index: 999; white-space: nowrap; }
     </style>
 </head>
@@ -155,6 +169,10 @@
         <div id="batteryBadge">
             <span id="batteryIcon">🔋</span>
             <span id="batteryPct">--%</span>
+        </div>
+        <div id="personBadge">
+            <div id="personDot"></div>
+            <span id="personCount">0 personas</span>
         </div>
         <button id="disconnectBtn" onclick="disconnect()">✕ Salir</button>
     </div>
@@ -421,7 +439,8 @@
             case 'stopCamera':   resetCameraUI(); break;
             case 'cameraFrame':  renderFrame(data.data); break;
             case 'cameraError':  handleCameraError(data.error); break;
-            case 'takePhoto':    renderPhoto(data.data); break;  // ← NUEVO
+            case 'takePhoto':    renderPhoto(data.data); break;
+            case 'personCount':  updatePersonCount(data.count); break;  // ← NUEVO
             case 'connected':    robotOnline = true; break;
         }
     }
@@ -640,6 +659,21 @@
         el.style.color = color === 'red' ? 'var(--red)' : color === 'yellow' ? 'var(--yellow)' : 'var(--green)';
         clearTimeout(el._timeout);
         el._timeout = setTimeout(() => el.style.display = 'none', 2500);
+    }
+
+    // ── Contador de personas ──────────────────────
+    function updatePersonCount(count) {
+        const badge = document.getElementById('personBadge');
+        const label = document.getElementById('personCount');
+        const dot   = document.getElementById('personDot');
+        badge.classList.add('visible');
+        if (count === 0) {
+            badge.classList.add('zero');
+            label.textContent = 'Sin personas';
+        } else {
+            badge.classList.remove('zero');
+            label.textContent = count === 1 ? '1 persona' : count + ' personas';
+        }
     }
 
     window.onload = () => {
