@@ -75,12 +75,45 @@
         .stat-value { font-size: 14px; font-weight: bold; }
         #batteryBar { height: 8px; border-radius: 4px; background: var(--border); margin-top: 8px; overflow: hidden; }
         #batteryFill { height: 100%; border-radius: 4px; background: var(--green); transition: width 0.5s; }
-        #cameraContainer { width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; position: relative; }
+
+        /* ── Cámara ── */
+        #cameraContainer {
+            width: 100%; background: #000; border-radius: 12px; overflow: hidden;
+            aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
         #cameraImg { width: 100%; height: 100%; object-fit: contain; display: none; }
         #cameraPlaceholder { display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; }
         #cameraPlaceholder span { font-size: 40px; }
         #cameraFps { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: var(--green); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-family: monospace; display: none; }
         #cameraLatency { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: var(--yellow); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-family: monospace; display: none; }
+
+        /* ── Canvas bounding boxes ── */
+        #boxCanvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+        }
+
+        /* ── Contador de personas en cámara ── */
+        #personOverlay {
+            position: absolute;
+            bottom: 8px; left: 8px;
+            background: rgba(0,0,0,0.65);
+            border: 1px solid rgba(0,255,136,0.4);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--green);
+            font-family: monospace;
+            display: none;
+            backdrop-filter: blur(6px);
+        }
+        #personOverlay.active { display: block; }
+        #personOverlay.zero { color: var(--muted); border-color: rgba(100,100,136,0.3); }
+
         .camera-controls { display: flex; gap: 8px; }
         .camera-controls button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
         #btnStartCamera { background: var(--green); color: #000; }
@@ -106,7 +139,7 @@
         #btnClearPhoto:active { background: var(--border); }
         #photoLoading { text-align: center; color: var(--muted); font-size: 13px; padding: 16px; display: none; }
 
-        /* ── Contador de personas ── */
+        /* ── Contador de personas (header badge) ── */
         #personBadge {
             display: none; align-items: center; gap: 6px;
             background: rgba(255,68,85,0.15); border: 1px solid rgba(255,68,85,0.4);
@@ -230,6 +263,10 @@
                         <div style="font-size:12px">Presiona iniciar para ver en vivo</div>
                     </div>
                     <img id="cameraImg" alt="Camera feed">
+                    <!-- Canvas para bounding boxes, encima de la imagen -->
+                    <canvas id="boxCanvas"></canvas>
+                    <!-- Overlay contador de personas en cámara -->
+                    <div id="personOverlay">👤 0 personas</div>
                     <div id="cameraFps">-- fps</div>
                     <div id="cameraLatency">-- ms</div>
                 </div>
@@ -346,6 +383,10 @@
     let lastFrameTime = 0, currentSpeed = 0.30, currentTurnSpeed = 30.0;
     let lastPhotoBase64 = null;
 
+    // Resolución nativa de la cámara del robot
+    const CAM_W = 640;
+    const CAM_H = 480;
+
     const presets = {
         slow:   { linear: 0.15, turn: 15.0 },
         normal: { linear: 0.30, turn: 30.0 },
@@ -440,7 +481,8 @@
             case 'cameraFrame':  renderFrame(data.data); break;
             case 'cameraError':  handleCameraError(data.error); break;
             case 'takePhoto':    renderPhoto(data.data); break;
-            case 'personCount':  updatePersonCount(data.count); break;  // ← NUEVO
+            // ← personCount ahora pasa también los boxes
+            case 'personCount':  updatePersonCount(data.count, data.boxes || []); break;
             case 'connected':    robotOnline = true; break;
         }
     }
@@ -516,6 +558,11 @@
         document.getElementById('btnStopCamera').style.display = 'none';
         document.getElementById('cameraFps').style.display = 'none';
         document.getElementById('cameraLatency').style.display = 'none';
+        // Limpiar canvas al detener cámara
+        const canvas = document.getElementById('boxCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('personOverlay').classList.remove('active', 'zero');
     }
 
     function renderFrame(base64) {
@@ -661,11 +708,11 @@
         el._timeout = setTimeout(() => el.style.display = 'none', 2500);
     }
 
-    // ── Contador de personas ──────────────────────
-    function updatePersonCount(count) {
+    // ── Contador de personas + bounding boxes ─────────────
+    function updatePersonCount(count, boxes) {
+        // Badge en el header
         const badge = document.getElementById('personBadge');
         const label = document.getElementById('personCount');
-        const dot   = document.getElementById('personDot');
         badge.classList.add('visible');
         if (count === 0) {
             badge.classList.add('zero');
@@ -674,6 +721,91 @@
             badge.classList.remove('zero');
             label.textContent = count === 1 ? '1 persona' : count + ' personas';
         }
+
+        // Overlay en cámara
+        const overlay = document.getElementById('personOverlay');
+        overlay.classList.add('active');
+        if (count === 0) {
+            overlay.classList.add('zero');
+            overlay.textContent = '👤 Sin personas';
+        } else {
+            overlay.classList.remove('zero');
+            overlay.textContent = `👤 ${count === 1 ? '1 persona' : count + ' personas'}`;
+        }
+
+        // Dibujar bounding boxes
+        drawBoxes(boxes || []);
+    }
+
+    function drawBoxes(boxes) {
+        const canvas = document.getElementById('boxCanvas');
+        const img    = document.getElementById('cameraImg');
+        const ctx    = canvas.getContext('2d');
+
+        // Sincronizar tamaño del canvas con el elemento img renderizado
+        const w = img.clientWidth  || canvas.offsetWidth  || 320;
+        const h = img.clientHeight || canvas.offsetHeight || 240;
+        canvas.width  = w;
+        canvas.height = h;
+
+        ctx.clearRect(0, 0, w, h);
+
+        if (!boxes.length) return;
+
+        // Factores de escala: de coords nativas 640x480 → tamaño visual del canvas
+        const scaleX = w / CAM_W;
+        const scaleY = h / CAM_H;
+
+        boxes.forEach((b, i) => {
+            const x = b.x * scaleX;
+            const y = b.y * scaleY;
+            const bw = b.w * scaleX;
+            const bh = b.h * scaleY;
+
+            // Sombra para contraste
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur  = 4;
+
+            // Rectángulo principal
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth   = 2;
+            ctx.strokeRect(x, y, bw, bh);
+
+            // Esquinas decorativas (estilo HUD)
+            const cs = Math.min(14, bw * 0.2, bh * 0.2); // tamaño de esquina
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth   = 3;
+            ctx.shadowBlur  = 6;
+
+            // Esquina superior-izquierda
+            ctx.beginPath(); ctx.moveTo(x, y + cs); ctx.lineTo(x, y); ctx.lineTo(x + cs, y); ctx.stroke();
+            // Esquina superior-derecha
+            ctx.beginPath(); ctx.moveTo(x + bw - cs, y); ctx.lineTo(x + bw, y); ctx.lineTo(x + bw, y + cs); ctx.stroke();
+            // Esquina inferior-izquierda
+            ctx.beginPath(); ctx.moveTo(x, y + bh - cs); ctx.lineTo(x, y + bh); ctx.lineTo(x + cs, y + bh); ctx.stroke();
+            // Esquina inferior-derecha
+            ctx.beginPath(); ctx.moveTo(x + bw - cs, y + bh); ctx.lineTo(x + bw, y + bh); ctx.lineTo(x + bw, y + bh - cs); ctx.stroke();
+
+            ctx.shadowBlur = 0;
+
+            // Etiqueta con fondo semitransparente
+            const label = `#${i + 1}`;
+            ctx.font = 'bold 11px monospace';
+            const textW = ctx.measureText(label).width + 10;
+            const labelH = 18;
+            const labelY = y > labelH + 2 ? y - labelH - 2 : y + 2;
+
+            ctx.fillStyle = 'rgba(0, 255, 136, 0.2)';
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.roundRect(x, labelY, textW, labelH, 3);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#00ff88';
+            ctx.fillText(label, x + 5, labelY + 12);
+        });
     }
 
     window.onload = () => {
