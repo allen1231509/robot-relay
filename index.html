@@ -1266,8 +1266,7 @@
                 let i = 0, lines = [], line = '';
                 while (lines.length < 3) {
                     const ch = String.fromCharCode(bytes[i++]);
-                    if (ch === '
-') {
+                    if (ch === '\n') {
                         if (!line.startsWith('#')) lines.push(line);
                         line = '';
                     } else line += ch;
