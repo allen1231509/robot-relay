@@ -12,6 +12,8 @@
             --yellow: #ffcc00; --text: #ffffff; --muted: #666688;
         }
         body { background: var(--bg); color: var(--text); font-family: 'Arial', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* ── Pantalla de conexión ── */
         #connectScreen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 32px; }
         .robot-icon { font-size: 80px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
@@ -28,8 +30,10 @@
         #connectBtn { padding: 16px; border-radius: 10px; border: none; background: var(--green); color: #000; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; }
         #connectBtn:active { opacity: 0.8; }
         .conn-status { font-size: 12px; text-align: center; color: var(--muted); min-height: 18px; }
+
+        /* ── App ── */
         #appScreen { display: none; flex-direction: column; flex: 1; }
-        #header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
+        #header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
         #headerLeft { display: flex; align-items: center; gap: 10px; }
         #headerTitle { font-size: 16px; font-weight: bold; color: var(--green); }
         #headerSub { font-size: 10px; color: var(--muted); }
@@ -37,19 +41,27 @@
         #disconnectBtn { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--red); background: transparent; color: var(--red); cursor: pointer; font-size: 12px; }
         #robotBanner { padding: 8px 16px; font-size: 12px; text-align: center; background: #ff445522; color: var(--red); border-bottom: 1px solid #ff445544; display: none; }
         #robotBanner.connected { background: #00ff8811; color: var(--green); border-color: #00ff8822; }
-        #tabs { display: flex; background: var(--card); border-bottom: 1px solid var(--border); }
-        .tab { flex: 1; padding: 10px 2px; text-align: center; cursor: pointer; font-size: 10px; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.2s; }
+
+        /* ── Tabs ── */
+        #tabs { display: flex; background: var(--card); border-bottom: 1px solid var(--border); overflow-x: auto; }
+        .tab { flex: 1; min-width: 48px; padding: 10px 2px; text-align: center; cursor: pointer; font-size: 10px; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
         .tab.active { color: var(--green); border-bottom-color: var(--green); }
         .tab-icon { font-size: 16px; display: block; }
         #tabContent { flex: 1; overflow-y: auto; padding: 16px; }
         .tabPanel { display: none; flex-direction: column; gap: 16px; }
         .tabPanel.active { display: flex; }
+
+        /* ── Cards ── */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
         .card-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+        /* ── D-Pad ── */
         #dpad { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 72px); gap: 8px; max-width: 280px; margin: 0 auto; }
         .dpad-btn { border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; }
         .dpad-btn:active { background: var(--green); color: #000; border-color: var(--green); }
         .dpad-empty { background: transparent !important; border: none !important; }
+
+        /* ── Velocidad ── */
         #speedPresets { display: flex; gap: 8px; margin-bottom: 12px; }
         .preset-btn { flex: 1; padding: 10px 4px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; font-size: 12px; }
         .preset-btn.active { background: var(--green); color: #000; border-color: var(--green); font-weight: bold; }
@@ -58,6 +70,8 @@
         #speedValue { font-size: 13px; color: var(--green); min-width: 36px; text-align: right; }
         #stopBtn { width: 100%; padding: 18px; border-radius: 12px; border: none; background: var(--red); color: #fff; font-size: 22px; font-weight: bold; cursor: pointer; letter-spacing: 2px; }
         #stopBtn:active { opacity: 0.8; }
+
+        /* ── Inputs ── */
         .input-row { display: flex; gap: 8px; }
         .text-input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 15px; }
         .text-input:focus { outline: none; border-color: var(--green); }
@@ -66,24 +80,26 @@
         .action-btn.blue { background: var(--blue); color: #fff; }
         .action-btn.yellow { background: var(--yellow); color: #000; }
         .action-btn.red { background: var(--red); color: #fff; }
+
+        /* ── Lugares ── */
         #placesList { display: flex; flex-wrap: wrap; gap: 8px; }
         .place-btn { padding: 10px 16px; border-radius: 8px; border: 1px solid var(--green); background: transparent; color: var(--green); cursor: pointer; font-size: 14px; }
         .place-btn:active { background: var(--green); color: #000; }
+
+        /* ── Stats ── */
         .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
         .stat-row:last-child { border-bottom: none; }
         .stat-label { font-size: 13px; color: var(--muted); }
         .stat-value { font-size: 14px; font-weight: bold; }
         #batteryBar { height: 8px; border-radius: 4px; background: var(--border); margin-top: 8px; overflow: hidden; }
         #batteryFill { height: 100%; border-radius: 4px; background: var(--green); transition: width 0.5s; }
+
+        /* ── Cámara ── */
         #cameraContainer { width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; position: relative; }
         #cameraImg { width: 100%; height: 100%; object-fit: contain; display: none; }
         #cameraPlaceholder { display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; }
         #cameraPlaceholder span { font-size: 40px; }
-        #boxCanvas {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-        }
+        #boxCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
         #cameraFps { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: var(--green); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-family: monospace; display: none; }
         #cameraLatency { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: var(--yellow); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-family: monospace; display: none; }
         .camera-controls { display: flex; gap: 8px; }
@@ -98,7 +114,7 @@
         .cdpad-btn { border-radius: 10px; border: 1px solid var(--border); background: rgba(18,18,31,0.85); color: var(--text); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; }
         .cdpad-btn:active { background: var(--green); color: #000; border-color: var(--green); }
 
-        /* ── Foto capturada ── */
+        /* ── Foto ── */
         #photoSection { display: none; flex-direction: column; gap: 10px; }
         #photoSection.visible { display: flex; }
         #photoPreviewContainer { width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; position: relative; }
@@ -111,14 +127,8 @@
         #btnClearPhoto:active { background: var(--border); }
         #photoLoading { text-align: center; color: var(--muted); font-size: 13px; padding: 16px; display: none; }
 
-        /* ── Contador de personas ── */
-        #personBadge {
-            display: none; align-items: center; gap: 6px;
-            background: rgba(255,68,85,0.15); border: 1px solid rgba(255,68,85,0.4);
-            border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 700;
-            color: var(--red); backdrop-filter: blur(10px);
-            animation: personPulse 2s ease-in-out infinite;
-        }
+        /* ── Badge personas ── */
+        #personBadge { display: none; align-items: center; gap: 6px; background: rgba(255,68,85,0.15); border: 1px solid rgba(255,68,85,0.4); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 700; color: var(--red); backdrop-filter: blur(10px); animation: personPulse 2s ease-in-out infinite; }
         #personBadge.visible { display: flex; }
         #personBadge.zero { background: rgba(100,100,136,0.15); border-color: rgba(100,100,136,0.3); color: var(--muted); animation: none; }
         @keyframes personPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,68,85,0.4)} 50%{box-shadow:0 0 0 8px rgba(255,68,85,0)} }
@@ -147,16 +157,16 @@
         #captureBtn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--card); color: var(--text); font-size: 14px; font-weight: bold; cursor: pointer; border: 1px solid var(--border); margin-bottom: 10px; }
         #captureBtn:active { background: var(--border); }
 
-        /* ── Mapa ── */
+        /* ── Mapa canvas (PGM) ── */
         #mapCanvas { width: 100%; border-radius: 12px; background: #0d0d1a; cursor: grab; display: block; touch-action: none; }
         #mapCanvas:active { cursor: grabbing; }
-        .map-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .map-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
         .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
+        /* ── Feedback ── */
         #feedback { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #222; border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--green); display: none; z-index: 999; white-space: nowrap; }
     </style>
-    <!-- Paho MQTT para Orion Star -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
 </head>
 <body>
@@ -171,13 +181,13 @@
             <div class="mode-tab active" onclick="setMode('local', this)">📶 WiFi Local</div>
             <div class="mode-tab" onclick="setMode('remote', this)">🌐 Remoto</div>
         </div>
-        <div id="localFields">
+        <div id="localFields" style="display:flex;flex-direction:column;gap:10px;">
             <div class="conn-field">
                 <label>IP del robot</label>
                 <input id="ipInput" type="text" placeholder="192.168.1.XX" inputmode="decimal">
             </div>
         </div>
-        <div id="remoteFields" style="display:none; flex-direction:column; gap:10px;">
+        <div id="remoteFields" style="display:none;flex-direction:column;gap:10px;">
             <div class="conn-field">
                 <label>URL del servidor relay</label>
                 <input id="relayUrl" type="text" placeholder="robot-relay-34o6.onrender.com">
@@ -278,8 +288,6 @@
                 <button id="btnStopCamera" onclick="stopCamera()">⏹ Detener</button>
                 <button id="btnTakePhoto" onclick="takePhoto()">📸 Foto</button>
             </div>
-
-            <!-- ── Sección foto capturada ── -->
             <div id="photoLoading">📸 Capturando foto...</div>
             <div id="photoSection">
                 <div class="card-title" style="margin-bottom:0">📸 Foto capturada</div>
@@ -292,7 +300,6 @@
                     <button id="btnClearPhoto" onclick="clearPhoto()">✕ Cerrar</button>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-title">🎮 Mover mientras ves</div>
                 <div id="cameraDpad">
@@ -392,7 +399,7 @@
             </div>
         </div>
 
-        <!-- Mapa -->
+        <!-- Mapa canvas PGM -->
         <div id="tab-map" class="tabPanel">
             <div class="card" style="padding:12px">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -400,7 +407,7 @@
                     <button class="action-btn" style="padding:6px 12px;font-size:12px" onclick="resetMapView()">↺ Centrar</button>
                 </div>
                 <canvas id="mapCanvas" height="400"></canvas>
-                <div class="map-legend" style="margin-top:10px">
+                <div class="map-legend">
                     <div class="legend-item"><div class="legend-dot" style="background:#00ff88"></div>Robot</div>
                     <div class="legend-item"><div class="legend-dot" style="background:#4488ff"></div>Waypoint</div>
                     <div class="legend-item"><div class="legend-dot" style="background:#ffcc00"></div>Carga</div>
@@ -421,18 +428,36 @@
 <div id="feedback"></div>
 
 <script>
+    // ── Constantes ─────────────────────────────────────────────────────
     const RELAY_URL    = 'robot-relay-34o6.onrender.com';
     const RELAY_SECRET = 'mirobotclave2024';
+    const CAM_W = 640, CAM_H = 480;
 
-    const CAM_W = 640;
-    const CAM_H = 480;
+    // Mapa PGM: resolución 0.05 m/px, tamaño y origen en coordenadas mundo
+    const PGM_RESOLUTION = 0.05;
+    const PGM_WIDTH      = 580;
+    const PGM_HEIGHT     = 500;
+    const PGM_ORIGIN_X   = -14.5; // metros — esquina inferior izquierda del PGM
+    const PGM_ORIGIN_Y   = -12.5;
 
+    // ── Estado global ──────────────────────────────────────────────────
     let ws = null, connected = false, isRemoteMode = false, robotOnline = false;
     let reconnectTimeout = null, reconnectAttempts = 0, lastWsUrl = null;
     let positionInterval = null, batteryInterval = null;
     let cameraActive = false, fpsCounter = 0, fpsLastTime = Date.now();
     let lastFrameTime = 0, currentSpeed = 0.30, currentTurnSpeed = 30.0;
-    let lastPhotoBase64 = null;
+    let lastPhotoBase64 = null, registerPhotoBase64 = null;
+
+    // Reconocimiento facial overlay
+    let lastFaceResults = [];
+    let faceResultsTimeout = null;
+
+    // Mapa
+    let mapPlaces = [], robotPos = { x: 0, y: 0, theta: 0 };
+    let mapScale = 30, mapOffsetX = 0, mapOffsetY = 0;
+    let mapDragging = false, mapDragStart = { x: 0, y: 0 };
+    let mapInitialized = false, mapImage = null;
+    let mqttClient = null;
 
     const presets = {
         slow:   { linear: 0.15, turn: 15.0 },
@@ -440,126 +465,87 @@
         fast:   { linear: 0.60, turn: 45.0 }
     };
 
+    // ── Conexión ───────────────────────────────────────────────────────
     function setMode(mode, el) {
         isRemoteMode = mode === 'remote';
         document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
         document.getElementById('localFields').style.display  = isRemoteMode ? 'none' : 'flex';
-        document.getElementById('remoteFields').style.display = isRemoteMode ? 'flex' : 'none';
+        document.getElementById('remoteFields').style.display = isRemoteMode ? 'flex'  : 'none';
     }
 
-    function switchTab(name) {
-        const tabNames = ['control', 'camera', 'announce', 'places', 'status', 'persons', 'map'];
-        document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabNames[i] === name));
-        document.querySelectorAll('.tabPanel').forEach(p => p.classList.remove('active'));
-        document.getElementById(`tab-${name}`).classList.add('active');
+    function doReconnect() {
+        if (!lastWsUrl || reconnectAttempts >= 5) {
+            document.getElementById('connectBtn').textContent = 'Conectar →';
+            document.getElementById('connStatus').textContent = reconnectAttempts >= 5 ? '❌ No se pudo reconectar' : '';
+            return;
+        }
+        reconnectAttempts++;
+        document.getElementById('connectBtn').textContent = `Reconectando ${reconnectAttempts}/5...`;
+        document.getElementById('connStatus').textContent = '⏳ Reintentando en 3s...';
+        reconnectTimeout = setTimeout(initWebSocket, 3000);
     }
 
-    function setPreset(name, e) {
-        const p = presets[name];
-        currentSpeed = p.linear; currentTurnSpeed = p.turn;
-        document.getElementById('speedSlider').value = Math.round(p.linear * 100);
-        document.getElementById('speedValue').textContent = p.linear.toFixed(2);
-        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-    }
-
-    function onSliderChange(val) {
-        currentSpeed = val / 100; currentTurnSpeed = currentSpeed * 100;
-        document.getElementById('speedValue').textContent = currentSpeed.toFixed(2);
-        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-    }
-
-    function tryReconnect(btn, status) {
+    function initWebSocket() {
         if (!lastWsUrl) return;
         ws = new WebSocket(lastWsUrl);
         ws.onopen = () => {
             reconnectAttempts = 0;
             connected = true;
-            btn.textContent = 'Conectar →';
-            status.textContent = '';
-            document.getElementById('connectScreen').style.display = 'none';
-            document.getElementById('appScreen').style.display = 'flex';
-            document.getElementById('headerSub').textContent = isRemoteMode ? '🌐 Modo remoto' : '📶 WiFi local';
-            if (isRemoteMode) { document.getElementById('robotBanner').style.display = 'block'; updateRobotBanner(false); }
-            loadPlaces(); startUpdates(); loadPersonsList(); connectOrionMqtt();
-        };
-        ws.onclose = () => {
-            connected = false; cameraActive = false;
-            resetCameraUI(); stopUpdates();
-            if (reconnectAttempts < 5 && lastWsUrl) {
-                reconnectAttempts++;
-                btn.textContent = `Reconectando ${reconnectAttempts}/5...`;
-                status.textContent = `⏳ Reintentando en 3s...`;
-                reconnectTimeout = setTimeout(() => tryReconnect(btn, status), 3000);
-            } else {
-                btn.textContent = 'Conectar →';
-                status.textContent = '❌ No se pudo reconectar';
-                lastWsUrl = null;
-            }
-        };
-        ws.onerror = () => {};
-        ws.onmessage = (e) => handleMessage(JSON.parse(e.data));
-    }
-
-    function connect() {
-        const btn = document.getElementById('connectBtn');
-        const status = document.getElementById('connStatus');
-        btn.textContent = 'Conectando...'; status.textContent = '';
-        let wsUrl;
-        if (isRemoteMode) {
-            const url    = document.getElementById('relayUrl').value.trim() || RELAY_URL;
-            const secret = document.getElementById('relaySecret').value.trim() || RELAY_SECRET;
-            wsUrl = `wss://${url}?type=controller&secret=${secret}`;
-            localStorage.setItem('relayUrl', url); localStorage.setItem('relaySecret', secret);
-        } else {
-            const ip = document.getElementById('ipInput').value.trim();
-            if (!ip) { alert('Ingresa la IP del robot'); btn.textContent = 'Conectar →'; return; }
-            wsUrl = `ws://${ip}:8080`;
-            localStorage.setItem('robotIp', ip);
-        }
-        lastWsUrl = wsUrl;
-        reconnectAttempts = 0;
-        ws = new WebSocket(wsUrl);
-        ws.onopen = () => {
-            connected = true;
+            document.getElementById('connectBtn').textContent = 'Conectar →';
+            document.getElementById('connStatus').textContent = '';
             document.getElementById('connectScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'flex';
             document.getElementById('headerSub').textContent = isRemoteMode ? '🌐 Modo remoto' : '📶 WiFi local';
             if (isRemoteMode) { document.getElementById('robotBanner').style.display = 'block'; updateRobotBanner(false); }
             loadPlaces(); startUpdates(); loadPersonsList();
+            connectOrionMqtt();
         };
         ws.onclose = () => {
             connected = false; cameraActive = false;
-            document.getElementById('connectScreen').style.display = 'flex';
-            document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('robotBanner').style.display = 'none';
             resetCameraUI(); stopUpdates();
             showFeedback('❌ Desconectado', 'red');
-            // ← Reconexión automática
-            if (reconnectAttempts < 5 && lastWsUrl) {
-                reconnectAttempts++;
-                btn.textContent = `Reconectando ${reconnectAttempts}/5...`;
-                status.textContent = `⏳ Reintentando en 3s...`;
-                reconnectTimeout = setTimeout(() => tryReconnect(btn, status), 3000);
-            } else {
-                btn.textContent = 'Conectar →';
-            }
+            doReconnect();
         };
-        ws.onerror = () => { btn.textContent = 'Conectar →'; status.textContent = '❌ No se pudo conectar'; };
-        ws.onmessage = (e) => handleMessage(JSON.parse(e.data));
+        ws.onerror = () => {};
+        ws.onmessage = (e) => { try { handleMessage(JSON.parse(e.data)); } catch(ex) {} };
+    }
+
+    function connect() {
+        const btn    = document.getElementById('connectBtn');
+        const status = document.getElementById('connStatus');
+        btn.textContent = 'Conectando...'; status.textContent = '';
+        if (isRemoteMode) {
+            const url    = document.getElementById('relayUrl').value.trim() || RELAY_URL;
+            const secret = document.getElementById('relaySecret').value.trim() || RELAY_SECRET;
+            lastWsUrl = `wss://${url}?type=controller&secret=${secret}`;
+            localStorage.setItem('relayUrl', url);
+            localStorage.setItem('relaySecret', secret);
+        } else {
+            const ip = document.getElementById('ipInput').value.trim();
+            if (!ip) { alert('Ingresa la IP del robot'); btn.textContent = 'Conectar →'; return; }
+            lastWsUrl = `ws://${ip}:8080`;
+            localStorage.setItem('robotIp', ip);
+        }
+        reconnectAttempts = 0;
+        initWebSocket();
     }
 
     function disconnect() {
-        reconnectAttempts = 5; // evitar reconexión automática
+        reconnectAttempts = 5;
         clearTimeout(reconnectTimeout);
         lastWsUrl = null;
-        stopCamera(); sendStop(); if (ws) ws.close();
+        stopCamera(); sendStop();
+        if (ws) ws.close();
+        document.getElementById('connectScreen').style.display = 'flex';
+        document.getElementById('appScreen').style.display = 'none';
+        document.getElementById('robotBanner').style.display = 'none';
     }
 
+    // ── Mensajes ───────────────────────────────────────────────────────
     function handleMessage(data) {
         switch(data.action ?? data.status) {
-            case 'robot_connected':    robotOnline = true; updateRobotBanner(true); loadPlaces(); break;
+            case 'robot_connected':    robotOnline = true;  updateRobotBanner(true);  loadPlaces(); break;
             case 'robot_disconnected': robotOnline = false; updateRobotBanner(false); break;
             case 'getPlaces':    renderPlaces(data.data); updateMapPlaces(data.data); break;
             case 'getPosition':  updatePosition(data.data); updateMapRobot(data.data); break;
@@ -580,6 +566,7 @@
             case 'personList':   renderPersonsList(data.data); break;
             case 'registerPerson': onRegisterResult(data); break;
             case 'personGreet':  onPersonGreet(data.name); break;
+            case 'faceResults':  drawFaceResults(data.faces || []); break;
         }
     }
 
@@ -591,6 +578,31 @@
         banner.style.display = 'block';
         banner.className = online ? 'connected' : '';
         banner.textContent = online ? '✅ Robot conectado al relay' : '⚠️ Robot no conectado al relay';
+    }
+
+    // ── Tabs ───────────────────────────────────────────────────────────
+    function switchTab(name) {
+        const tabNames = ['control','camera','announce','places','status','persons','map'];
+        document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabNames[i] === name));
+        document.querySelectorAll('.tabPanel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`tab-${name}`).classList.add('active');
+        if (name === 'map') { if (!mapInitialized && mapPlaces.length) initMapView(); drawMap(); }
+    }
+
+    // ── D-Pad ──────────────────────────────────────────────────────────
+    function setPreset(name, e) {
+        const p = presets[name];
+        currentSpeed = p.linear; currentTurnSpeed = p.turn;
+        document.getElementById('speedSlider').value = Math.round(p.linear * 100);
+        document.getElementById('speedValue').textContent = p.linear.toFixed(2);
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+    }
+
+    function onSliderChange(val) {
+        currentSpeed = val / 100; currentTurnSpeed = currentSpeed * 100;
+        document.getElementById('speedValue').textContent = currentSpeed.toFixed(2);
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
     }
 
     function setupDpad() {
@@ -628,7 +640,7 @@
 
     function sendStop() { send({ action: 'stop' }); }
 
-    // ── Cámara ─────────────────────────────────────────────
+    // ── Cámara ─────────────────────────────────────────────────────────
     function startCamera() {
         send({ action: 'startCamera' });
         cameraActive = true;
@@ -654,6 +666,8 @@
         document.getElementById('btnStopCamera').style.display = 'none';
         document.getElementById('cameraFps').style.display = 'none';
         document.getElementById('cameraLatency').style.display = 'none';
+        const canvas = document.getElementById('boxCanvas');
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     }
 
     function renderFrame(base64) {
@@ -672,6 +686,8 @@
             fpsCounter = 0; fpsLastTime = now;
         }
         if (latency > 0 && latency < 5000) document.getElementById('cameraLatency').textContent = `${latency} ms`;
+        // Redibujar overlay en cada frame (mantiene boxes + face results sincronizados)
+        drawCameraOverlay();
     }
 
     function handleCameraError(error) {
@@ -679,34 +695,147 @@
         resetCameraUI();
     }
 
-    // ── Foto ────────────────────────────────────────────────
+    // ── Overlay de cámara — personas + reconocimiento facial ───────────
+    // Recibe boxes simples del personCount (esquinas estilizadas, sin nombre)
+    let lastBoxes = [];
+
+    function updatePersonCount(count, boxes) {
+        const badge = document.getElementById('personBadge');
+        badge.classList.add('visible');
+        if (count === 0) { badge.classList.add('zero'); document.getElementById('personCount').textContent = 'Sin personas'; }
+        else { badge.classList.remove('zero'); document.getElementById('personCount').textContent = count === 1 ? '1 persona' : count + ' personas'; }
+        lastBoxes = boxes || [];
+        drawCameraOverlay();
+    }
+
+    // Recibe resultados de reconocimiento facial con nombre y score
+    function drawFaceResults(faces) {
+        lastFaceResults = faces;
+        clearTimeout(faceResultsTimeout);
+        faceResultsTimeout = setTimeout(() => { lastFaceResults = []; drawCameraOverlay(); }, 15000);
+        drawCameraOverlay();
+    }
+
+    // Función unificada: si hay faceResults los dibuja con nombre+score,
+    // si solo hay boxes los dibuja con esquinas estilizadas sin nombre.
+    function drawCameraOverlay() {
+        const canvas    = document.getElementById('boxCanvas');
+        const container = document.getElementById('cameraContainer');
+        const W = container.offsetWidth, H = container.offsetHeight;
+        if (canvas.width !== W)  canvas.width  = W;
+        if (canvas.height !== H) canvas.height = H;
+
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, W, H);
+        if (!cameraActive) return;
+
+        // Escala imagen dentro del contenedor (object-fit: contain)
+        const imgAspect = CAM_W / CAM_H;
+        const conAspect = W / H;
+        let rW, rH, oX, oY;
+        if (imgAspect > conAspect) { rW = W; rH = W / imgAspect; oX = 0; oY = (H - rH) / 2; }
+        else { rH = H; rW = H * imgAspect; oX = (W - rW) / 2; oY = 0; }
+        const sX = rW / CAM_W, sY = rH / CAM_H;
+
+        // Prioridad: si hay faceResults activos, los usa (tienen nombre y bbox)
+        if (lastFaceResults.length > 0) {
+            lastFaceResults.forEach(f => {
+                if (!f.bbox || f.bbox.length < 4) return;
+                const [x1, y1, x2, y2] = f.bbox;
+                const bx = oX + x1 * sX, by = oY + y1 * sY;
+                const bw = (x2 - x1) * sX, bh = (y2 - y1) * sY;
+                const isKnown = f.name && f.name !== 'Desconocido';
+                const color   = isKnown ? '#00ff88' : '#ff4455';
+
+                // Rectángulo
+                ctx.strokeStyle = color; ctx.lineWidth = 2;
+                ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4;
+                ctx.strokeRect(bx, by, bw, bh);
+                ctx.shadowBlur = 0;
+
+                // Esquinas estilizadas
+                drawCorners(ctx, bx, by, bw, bh, color);
+
+                // Etiqueta con nombre y score
+                const label = isKnown
+                    ? `${f.name} (${Math.round((f.score || 0) * 100)}%)`
+                    : 'Desconocido';
+                ctx.font = 'bold 13px Arial';
+                const tW = ctx.measureText(label).width + 12;
+                const lH = 22;
+                const lY = by > lH + 4 ? by - lH - 2 : by + 2;
+                ctx.fillStyle = isKnown ? 'rgba(0,255,136,0.2)' : 'rgba(255,68,85,0.2)';
+                ctx.strokeStyle = color; ctx.lineWidth = 1;
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(bx, lY, tW, lH, 4);
+                else ctx.rect(bx, lY, tW, lH);
+                ctx.fill(); ctx.stroke();
+                ctx.fillStyle = color;
+                ctx.fillText(label, bx + 6, lY + 15);
+            });
+        } else if (lastBoxes.length > 0) {
+            // Solo detección sin reconocimiento — esquinas estilizadas con número
+            lastBoxes.forEach((b, i) => {
+                const bx = oX + b.x * sX, by = oY + b.y * sY;
+                const bw = b.w * sX, bh = b.h * sY;
+                const color = '#00ff88';
+                ctx.strokeStyle = color; ctx.lineWidth = 2;
+                ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4;
+                ctx.strokeRect(bx, by, bw, bh);
+                ctx.shadowBlur = 0;
+                drawCorners(ctx, bx, by, bw, bh, color);
+                // Etiqueta número
+                const label = `#${i + 1}`;
+                ctx.font = 'bold 11px monospace';
+                const tW = ctx.measureText(label).width + 10;
+                const lH = 18;
+                const lY = by > lH + 2 ? by - lH - 2 : by + 2;
+                ctx.fillStyle = 'rgba(0,255,136,0.2)';
+                ctx.strokeStyle = color; ctx.lineWidth = 1;
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(bx, lY, tW, lH, 3);
+                else ctx.rect(bx, lY, tW, lH);
+                ctx.fill(); ctx.stroke();
+                ctx.fillStyle = color;
+                ctx.fillText(label, bx + 5, lY + 12);
+            });
+        }
+    }
+
+    // Esquinas estilizadas (helper compartido)
+    function drawCorners(ctx, x, y, w, h, color) {
+        const cs = Math.min(14, w * 0.2, h * 0.2);
+        ctx.strokeStyle = color; ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 6;
+        [[x, y+cs, x, y, x+cs, y], [x+w-cs, y, x+w, y, x+w, y+cs],
+         [x, y+h-cs, x, y+h, x+cs, y+h], [x+w-cs, y+h, x+w, y+h, x+w, y+h-cs]].forEach(([x1,y1,x2,y2,x3,y3]) => {
+            ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.lineTo(x3,y3); ctx.stroke();
+        });
+        ctx.shadowBlur = 0;
+    }
+
+    // ── Foto ───────────────────────────────────────────────────────────
     function takePhoto() {
         document.getElementById('photoLoading').style.display = 'block';
         document.getElementById('photoSection').classList.remove('visible');
         send({ action: 'takePhoto' });
-        showFeedback('📸 Capturando foto...');
     }
 
     function renderPhoto(base64) {
-        // Si es para registro de persona
         if (window._captureForRegister) {
             window._captureForRegister = false;
             registerPhotoBase64 = base64;
-            const preview = document.getElementById('registerPreview');
-            const img = document.getElementById('registerPreviewImg');
-            img.src = 'data:image/jpeg;base64,' + base64;
-            preview.classList.add('visible');
+            document.getElementById('registerPreviewImg').src = 'data:image/jpeg;base64,' + base64;
+            document.getElementById('registerPreview').classList.add('visible');
             document.getElementById('registerBtn').disabled = false;
             showFeedback('✅ Foto capturada — escribe el nombre y registra');
             return;
         }
-        // Foto normal
         lastPhotoBase64 = base64;
         document.getElementById('photoLoading').style.display = 'none';
         document.getElementById('photoPreview').src = 'data:image/jpeg;base64,' + base64;
         const now = new Date();
-        document.getElementById('photoTimestamp').textContent =
-            now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        document.getElementById('photoTimestamp').textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
         document.getElementById('photoSection').classList.add('visible');
         showFeedback('✅ Foto capturada');
     }
@@ -715,9 +844,9 @@
         if (!lastPhotoBase64) return;
         const a = document.createElement('a');
         const now = new Date();
-        const filename = `zoxirobit_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}.jpg`;
+        const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
         a.href = 'data:image/jpeg;base64,' + lastPhotoBase64;
-        a.download = filename;
+        a.download = `zoxirobit_${ts}.jpg`;
         a.click();
         showFeedback('⬇️ Foto descargada');
     }
@@ -728,7 +857,7 @@
         document.getElementById('photoLoading').style.display = 'none';
     }
 
-    // ── TTS ────────────────────────────────────────────────
+    // ── TTS / Anuncios ─────────────────────────────────────────────────
     function sendTts() {
         const text = document.getElementById('ttsInput').value.trim();
         if (!text) return;
@@ -745,11 +874,12 @@
         showFeedback('🚀 Enviando robot...');
     }
 
+    // ── Lugares ────────────────────────────────────────────────────────
     function loadPlaces() { send({ action: 'getPlaces' }); send({ action: 'getMapName' }); }
 
     function renderPlaces(places) {
         const container = document.getElementById('placesList');
-        const select = document.getElementById('announcePlace');
+        const select    = document.getElementById('announcePlace');
         if (!places || places.length === 0) {
             container.innerHTML = '<span style="color:var(--muted);font-size:13px">No hay lugares guardados</span>';
             return;
@@ -776,13 +906,18 @@
 
     function stopNav() { send({ action: 'stopNavigation' }); showFeedback('⏹️ Navegación detenida'); }
 
+    // ── Updates periódicos ─────────────────────────────────────────────
     function startUpdates() {
+        stopUpdates();
         positionInterval = setInterval(() => send({ action: 'getPosition' }), 2000);
-        batteryInterval  = setInterval(() => send({ action: 'getBattery' }), 10000);
+        batteryInterval  = setInterval(() => send({ action: 'getBattery' }),  10000);
         send({ action: 'getBattery' });
     }
 
-    function stopUpdates() { clearInterval(positionInterval); clearInterval(batteryInterval); }
+    function stopUpdates() {
+        clearInterval(positionInterval);
+        clearInterval(batteryInterval);
+    }
 
     function updatePosition(pos) {
         if (!pos) return;
@@ -804,94 +939,14 @@
     function updateMapName(name) { document.getElementById('mapName').textContent = name ?? '--'; }
     function goCharge() { send({ action: 'charge' }); showFeedback('⚡ Enviando a cargar...'); }
 
-    function showFeedback(msg, color = 'green') {
-        const el = document.getElementById('feedback');
-        el.textContent = msg; el.style.display = 'block';
-        el.style.color = color === 'red' ? 'var(--red)' : color === 'yellow' ? 'var(--yellow)' : 'var(--green)';
-        clearTimeout(el._timeout);
-        el._timeout = setTimeout(() => el.style.display = 'none', 2500);
-    }
-
-    // ── Contador de personas ──────────────────────────────────────────
-    function updatePersonCount(count, boxes) {
-        const badge = document.getElementById('personBadge');
-        const label = document.getElementById('personCount');
-        badge.classList.add('visible');
-        if (count === 0) {
-            badge.classList.add('zero');
-            label.textContent = 'Sin personas';
-        } else {
-            badge.classList.remove('zero');
-            label.textContent = count === 1 ? '1 persona' : count + ' personas';
-        }
-        drawBoxes(boxes || []);
-    }
-
-    function drawBoxes(boxes) {
-        const canvas = document.getElementById('boxCanvas');
-        const img    = document.getElementById('cameraImg');
-        const ctx    = canvas.getContext('2d');
-        const containerW = canvas.offsetWidth;
-        const containerH = canvas.offsetHeight;
-        canvas.width  = containerW;
-        canvas.height = containerH;
-        ctx.clearRect(0, 0, containerW, containerH);
-        if (!boxes.length || !cameraActive) return;
-        const imgAspect = CAM_W / CAM_H;
-        const containerAspect = containerW / containerH;
-        let renderW, renderH, offsetX, offsetY;
-        if (imgAspect > containerAspect) {
-            renderW = containerW; renderH = containerW / imgAspect;
-            offsetX = 0; offsetY = (containerH - renderH) / 2;
-        } else {
-            renderH = containerH; renderW = containerH * imgAspect;
-            offsetX = (containerW - renderW) / 2; offsetY = 0;
-        }
-        const scaleX = renderW / CAM_W;
-        const scaleY = renderH / CAM_H;
-        boxes.forEach((b, i) => {
-            const x  = offsetX + b.x * scaleX;
-            const y  = offsetY + b.y * scaleY;
-            const bw = b.w * scaleX;
-            const bh = b.h * scaleY;
-            ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4;
-            ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 2;
-            ctx.strokeRect(x, y, bw, bh);
-            const cs = Math.min(14, bw * 0.2, bh * 0.2);
-            ctx.lineWidth = 3; ctx.shadowBlur = 6;
-            ctx.beginPath(); ctx.moveTo(x, y + cs); ctx.lineTo(x, y); ctx.lineTo(x + cs, y); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(x + bw - cs, y); ctx.lineTo(x + bw, y); ctx.lineTo(x + bw, y + cs); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(x, y + bh - cs); ctx.lineTo(x, y + bh); ctx.lineTo(x + cs, y + bh); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(x + bw - cs, y + bh); ctx.lineTo(x + bw, y + bh); ctx.lineTo(x + bw, y + bh - cs); ctx.stroke();
-            ctx.shadowBlur = 0;
-            const label = `#${i + 1}`;
-            ctx.font = 'bold 11px monospace';
-            const textW = ctx.measureText(label).width + 10;
-            const labelH = 18;
-            const labelY = y > labelH + 2 ? y - labelH - 2 : y + 2;
-            ctx.fillStyle = 'rgba(0,255,136,0.2)'; ctx.strokeStyle = '#00ff88'; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.roundRect(x, labelY, textW, labelH, 3); ctx.fill(); ctx.stroke();
-            ctx.fillStyle = '#00ff88';
-            ctx.fillText(label, x + 5, labelY + 12);
-        });
-    }
-
-    // ── Pestaña Personas ──────────────────────────────────────────────
-    let registerPhotoBase64 = null;
-
-    function loadPersonsList() {
-        send({ action: 'getPersonList' });
-    }
+    // ── Personas ───────────────────────────────────────────────────────
+    function loadPersonsList() { send({ action: 'getPersonList' }); }
 
     function captureForRegister() {
         showFeedback('📷 Capturando foto...');
-        send({ action: 'takePhoto' });
-        // La respuesta llega por takePhoto en handleMessage
-        // Guardamos la foto para registro
         window._captureForRegister = true;
+        send({ action: 'takePhoto' });
     }
-
-
 
     function registerPerson() {
         const name = document.getElementById('registerNameInput').value.trim();
@@ -921,7 +976,6 @@
 
     function renderPersonsList(persons) {
         const container = document.getElementById('personsList');
-        // Filtrar personas eliminadas o sin nombre
         const valid = (persons || []).filter(p => p.name && p.name !== '_deleted_' && p.name.trim() !== '');
         if (valid.length === 0) {
             container.innerHTML = '<span style="color:var(--muted);font-size:13px">No hay personas registradas</span>';
@@ -937,8 +991,7 @@
                     <div class="person-name">${p.name || 'Sin nombre'}</div>
                     <div class="person-id">ID: ${p.id}</div>
                 </div>
-                <button class="person-delete" onclick="deletePerson(${p.id})">🗑️ Eliminar</button>
-            `;
+                <button class="person-delete" onclick="deletePerson(${p.id})">🗑️ Eliminar</button>`;
             container.appendChild(div);
         });
     }
@@ -947,31 +1000,22 @@
         if (!confirm('¿Eliminar esta persona?')) return;
         send({ action: 'deletePerson', id });
         showFeedback('🗑️ Eliminando...');
+        setTimeout(loadPersonsList, 1500);
     }
 
     function onPersonGreet(name) {
         showFeedback(`👋 ¡Hola ${name}!`, 'green');
         const log = document.getElementById('greetLog');
-        // Limpiar mensaje inicial
         if (log.querySelector('span')) log.innerHTML = '';
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString();
+        const now  = new Date();
         const item = document.createElement('div');
         item.className = 'greet-item';
-        item.innerHTML = `<span>👋</span><span class="greet-name">${name}</span><span class="greet-time">${timeStr}</span>`;
+        item.innerHTML = `<span>👋</span><span class="greet-name">${name}</span><span class="greet-time">${now.toLocaleTimeString()}</span>`;
         log.insertBefore(item, log.firstChild);
-        // Máximo 10 entradas
         while (log.children.length > 10) log.removeChild(log.lastChild);
     }
 
-    // ── Mapa en tiempo real ───────────────────────────────────────────
-    let mapPlaces = [];
-    let robotPos = { x: 0, y: 0, theta: 0 };
-    let mapScale = 30; // píxeles por metro
-    let mapOffsetX = 0, mapOffsetY = 0;
-    let mapDragging = false, mapDragStart = { x: 0, y: 0 };
-    let mapInitialized = false;
-
+    // ── Mapa canvas PGM ────────────────────────────────────────────────
     function updateMapPlaces(places) {
         if (!places || !places.length) return;
         mapPlaces = places;
@@ -982,7 +1026,6 @@
     function updateMapRobot(pos) {
         if (!pos) return;
         robotPos = { x: pos.x || 0, y: pos.y || 0, theta: pos.theta || 0 };
-        // Actualizar stats
         const mx = document.getElementById('mapPosX');
         const my = document.getElementById('mapPosY');
         const mt = document.getElementById('mapPosTheta');
@@ -997,37 +1040,21 @@
         const canvas = document.getElementById('mapCanvas');
         if (!canvas) return;
         const W = canvas.offsetWidth || 360;
-        canvas.width = W;
-        canvas.height = 400;
-
-        // Calcular bounding box de todos los puntos
+        canvas.width = W; canvas.height = 400;
         const xs = mapPlaces.map(p => p.x);
         const ys = mapPlaces.map(p => p.y);
-        const minX = Math.min(...xs) - 2;
-        const maxX = Math.max(...xs) + 2;
-        const minY = Math.min(...ys) - 2;
-        const maxY = Math.max(...ys) + 2;
-        const rangeX = maxX - minX;
-        const rangeY = maxY - minY;
-
-        // Escala para que quepan todos los puntos
-        mapScale = Math.min((W - 40) / rangeX, (canvas.height - 40) / rangeY);
+        const minX = Math.min(...xs) - 2, maxX = Math.max(...xs) + 2;
+        const minY = Math.min(...ys) - 2, maxY = Math.max(...ys) + 2;
+        mapScale   = Math.min((W - 40) / (maxX - minX), (canvas.height - 40) / (maxY - minY));
         mapOffsetX = W / 2 - ((minX + maxX) / 2) * mapScale;
         mapOffsetY = canvas.height / 2 + ((minY + maxY) / 2) * mapScale;
     }
 
-    function resetMapView() {
-        mapInitialized = false;
-        if (mapPlaces.length) initMapView();
-        drawMap();
-    }
+    function resetMapView() { mapInitialized = false; if (mapPlaces.length) initMapView(); drawMap(); }
 
     function worldToCanvas(wx, wy) {
         const canvas = document.getElementById('mapCanvas');
-        return {
-            cx: wx * mapScale + mapOffsetX,
-            cy: canvas.height - (wy * mapScale + (canvas.height - mapOffsetY))
-        };
+        return { cx: wx * mapScale + mapOffsetX, cy: canvas.height - (wy * mapScale + (canvas.height - mapOffsetY)) };
     }
 
     function drawMap() {
@@ -1036,35 +1063,25 @@
         const ctx = canvas.getContext('2d');
         const W = canvas.width, H = canvas.height;
         ctx.clearRect(0, 0, W, H);
-
-        // Fondo
         ctx.fillStyle = '#0d0d1a';
         ctx.fillRect(0, 0, W, H);
 
-        // Imagen del mapa PGM como fondo
+        // Imagen PGM como fondo
         if (mapImage) {
-            // El PGM es 580x500 a 0.05 m/px
-            // Origen del mapa: PGM_ORIGIN_X, PGM_ORIGIN_Y
             const p0 = worldToCanvas(PGM_ORIGIN_X, PGM_ORIGIN_Y + PGM_HEIGHT * PGM_RESOLUTION);
             const p1 = worldToCanvas(PGM_ORIGIN_X + PGM_WIDTH * PGM_RESOLUTION, PGM_ORIGIN_Y);
             ctx.drawImage(mapImage, p0.cx, p0.cy, p1.cx - p0.cx, p1.cy - p0.cy);
         } else {
-            // Grid de fallback cuando no hay imagen
-            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-            ctx.lineWidth = 1;
-            const gridStep = mapScale;
-            for (let x = mapOffsetX % gridStep; x < W; x += gridStep) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-            }
-            for (let y = (H - mapOffsetY) % gridStep; y < H; y += gridStep) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-            }
+            // Grid de fallback mientras carga la imagen
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+            const gs = mapScale;
+            for (let x = mapOffsetX % gs; x < W; x += gs) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+            for (let y = (H - mapOffsetY) % gs; y < H; y += gs) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
         }
 
         // Ejes de referencia
         const origin = worldToCanvas(0, 0);
-        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(origin.cx, 0); ctx.lineTo(origin.cx, H); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(0, origin.cy); ctx.lineTo(W, origin.cy); ctx.stroke();
 
@@ -1072,204 +1089,100 @@
         mapPlaces.forEach(p => {
             const { cx, cy } = worldToCanvas(p.x, p.y);
             if (cx < -20 || cx > W + 20 || cy < -20 || cy > H + 20) return;
-
-            // Color según tipo
             let color = '#4488ff';
-            if (p.postype === 6 || p.typeId === 1 || p.typeId === 2) color = '#ffcc00'; // carga
-            if (p.postype === 1 || p.typeId === 8) color = '#ff4455'; // recepción
-
-            // Círculo
-            ctx.beginPath();
-            ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-            ctx.fillStyle = color + '33';
-            ctx.fill();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Nombre
-            ctx.fillStyle = color;
-            ctx.font = 'bold 10px Arial';
-            ctx.textAlign = 'center';
+            if (p.postype === 6 || p.typeId === 1 || p.typeId === 2) color = '#ffcc00';
+            if (p.postype === 1 || p.typeId === 8) color = '#ff4455';
+            ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+            ctx.fillStyle = color + '33'; ctx.fill();
+            ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+            ctx.fillStyle = color; ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center';
             ctx.fillText(p.name, cx, cy - 12);
         });
 
         // Robot
         const { cx: rx, cy: ry } = worldToCanvas(robotPos.x, robotPos.y);
-        const angle = -robotPos.theta; // canvas Y invertido
-
-        // Sombra robot
-        ctx.beginPath();
-        ctx.arc(rx, ry, 14, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0,255,136,0.15)';
-        ctx.fill();
-
-        // Cuerpo robot
-        ctx.beginPath();
-        ctx.arc(rx, ry, 10, 0, Math.PI * 2);
-        ctx.fillStyle = '#00ff88';
-        ctx.fill();
-
-        // Flecha dirección
-        ctx.save();
-        ctx.translate(rx, ry);
-        ctx.rotate(angle);
-        ctx.beginPath();
-        ctx.moveTo(14, 0);
-        ctx.lineTo(6, -5);
-        ctx.lineTo(6, 5);
-        ctx.closePath();
-        ctx.fillStyle = '#00ff88';
-        ctx.fill();
+        const angle = -robotPos.theta;
+        ctx.beginPath(); ctx.arc(rx, ry, 14, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,255,136,0.15)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(rx, ry, 10, 0, Math.PI * 2);
+        ctx.fillStyle = '#00ff88'; ctx.fill();
+        ctx.save(); ctx.translate(rx, ry); ctx.rotate(angle);
+        ctx.beginPath(); ctx.moveTo(14,0); ctx.lineTo(6,-5); ctx.lineTo(6,5); ctx.closePath();
+        ctx.fillStyle = '#00ff88'; ctx.fill();
         ctx.restore();
-
-        // Label robot
-        ctx.fillStyle = '#00ff88';
-        ctx.font = 'bold 10px Arial';
-        ctx.textAlign = 'center';
+        ctx.fillStyle = '#00ff88'; ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center';
         ctx.fillText('🤖', rx, ry + 24);
     }
 
-    // Drag del mapa
     function setupMapDrag() {
         const canvas = document.getElementById('mapCanvas');
         if (!canvas) return;
-        canvas.addEventListener('mousedown', e => {
-            mapDragging = true;
-            mapDragStart = { x: e.clientX - mapOffsetX, y: e.clientY - mapOffsetY };
-        });
-        canvas.addEventListener('mousemove', e => {
-            if (!mapDragging) return;
-            mapOffsetX = e.clientX - mapDragStart.x;
-            mapOffsetY = e.clientY - mapDragStart.y;
-            drawMap();
-        });
-        canvas.addEventListener('mouseup', () => mapDragging = false);
-        canvas.addEventListener('mouseleave', () => mapDragging = false);
-        // Touch
-        canvas.addEventListener('touchstart', e => {
-            mapDragging = true;
-            mapDragStart = { x: e.touches[0].clientX - mapOffsetX, y: e.touches[0].clientY - mapOffsetY };
-        }, { passive: true });
-        canvas.addEventListener('touchmove', e => {
-            if (!mapDragging) return;
-            mapOffsetX = e.touches[0].clientX - mapDragStart.x;
-            mapOffsetY = e.touches[0].clientY - mapDragStart.y;
-            drawMap();
-        }, { passive: true });
+        canvas.addEventListener('mousedown', e => { mapDragging = true; mapDragStart = { x: e.clientX - mapOffsetX, y: e.clientY - mapOffsetY }; });
+        canvas.addEventListener('mousemove', e => { if (!mapDragging) return; mapOffsetX = e.clientX - mapDragStart.x; mapOffsetY = e.clientY - mapDragStart.y; drawMap(); });
+        canvas.addEventListener('mouseup',   () => mapDragging = false);
+        canvas.addEventListener('mouseleave',() => mapDragging = false);
+        canvas.addEventListener('touchstart', e => { mapDragging = true; mapDragStart = { x: e.touches[0].clientX - mapOffsetX, y: e.touches[0].clientY - mapOffsetY }; }, { passive: true });
+        canvas.addEventListener('touchmove',  e => { if (!mapDragging) return; mapOffsetX = e.touches[0].clientX - mapDragStart.x; mapOffsetY = e.touches[0].clientY - mapDragStart.y; drawMap(); }, { passive: true });
         canvas.addEventListener('touchend', () => mapDragging = false);
-        // Zoom con rueda
         canvas.addEventListener('wheel', e => {
             e.preventDefault();
             const factor = e.deltaY < 0 ? 1.1 : 0.9;
-            const rect = canvas.getBoundingClientRect();
-            const mx = e.clientX - rect.left;
-            const my = e.clientY - rect.top;
+            const rect   = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
             mapOffsetX = mx - (mx - mapOffsetX) * factor;
             mapOffsetY = my - (my - mapOffsetY) * factor;
-            mapScale *= factor;
+            mapScale  *= factor;
             drawMap();
         }, { passive: false });
     }
 
-    // ── MQTT Orion Star ──────────────────────────────────────────────
-    let mqttClient = null;
-    let mqttConnected = false;
-    let mapImage = null;
-    // Resolución PGM: 0.05 m/px, origen calculado desde waypoints
-    const PGM_RESOLUTION = 0.05;
-    const PGM_WIDTH = 580;
-    const PGM_HEIGHT = 500;
-    // Origen del mapa en coordenadas mundo (esquina inferior izquierda del PGM)
-    // Calculado: robot en px=-3.3, py=-0.26 → pixel aproximado centro del mapa
-    const PGM_ORIGIN_X = -14.5; // metros
-    const PGM_ORIGIN_Y = -12.5; // metros
-
-    function worldToPgm(wx, wy) {
-        // Convierte coordenadas mundo (metros) a píxeles del PGM
-        const px = (wx - PGM_ORIGIN_X) / PGM_RESOLUTION;
-        const py = PGM_HEIGHT - (wy - PGM_ORIGIN_Y) / PGM_RESOLUTION;
-        return { px, py };
-    }
-
+    // ── MQTT Orion Star + carga imagen PGM ────────────────────────────
     async function connectOrionMqtt() {
+        const relayUrl = localStorage.getItem('relayUrl');
+        if (!relayUrl) return; // solo en modo remoto
         try {
-            // Obtener credenciales del relay
-            const relayUrl = localStorage.getItem('relayUrl') || 'robot-relay-34o6.onrender.com';
-            const res = await fetch(`https://${relayUrl}/orion-creds`);
-            if (!res.ok) throw new Error('No se pudo obtener credenciales');
+            const res = await fetch(`https://${relayUrl}/orion-creds`, { signal: AbortSignal.timeout(5000) });
+            if (!res.ok) return;
             const creds = await res.json();
-            if (!creds.ok) throw new Error(creds.error);
+            if (!creds.ok) return;
 
-            // Cargar imagen del mapa
-            loadMapImage(creds.robotId);
+            // Cargar imagen PGM del mapa
+            if (!mapImage) loadMapImage();
 
-            // Conectar al broker MQTT de Orion
-            if (mqttClient) { try { mqttClient.disconnect(); } catch(e) {} }
-
+            // Conectar MQTT
+            if (mqttClient) { try { mqttClient.disconnect(); } catch(e) {} mqttClient = null; }
             const clientId = creds.clientId + '_panel_' + Math.random().toString(36).substr(2, 5);
             mqttClient = new Paho.MQTT.Client('global-rmqws.orionstar.com', 443, '/mqtt', clientId);
-
-            mqttClient.onConnectionLost = () => {
-                mqttConnected = false;
-                console.log('MQTT Orion desconectado — reconectando en 10s');
-                setTimeout(connectOrionMqtt, 10000);
-            };
-
+            mqttClient.onConnectionLost = () => { console.log('MQTT Orion desconectado'); setTimeout(connectOrionMqtt, 10000); };
             mqttClient.onMessageArrived = (msg) => {
                 try {
                     const data = JSON.parse(msg.payloadString);
-                    if (data.px !== undefined) {
-                        // report_position
-                        updateMapRobot({ x: data.px, y: data.py, theta: data.theta || 0 });
-                    }
+                    if (data.px !== undefined) updateMapRobot({ x: data.px, y: data.py, theta: data.theta || 0 });
                 } catch(e) {}
             };
-
             mqttClient.connect({
-                useSSL: true,
-                userName: creds.user,
-                password: creds.pass,
-                onSuccess: () => {
-                    mqttConnected = true;
-                    console.log('✅ MQTT Orion conectado');
-                    // Suscribirse al topic de posición
-                    // El topic ctrls tiene el robot_id como parte del nombre
-                    // Buscar topic de posición
-                    const topic = `ctrls/${creds.robotId.replace(/[^a-zA-Z0-9]/g, '')}`;
-                    // Suscribirse a todos los topics relevantes
-                    mqttClient.subscribe(`ctrls/#`);
-                    mqttClient.subscribe(`maps/#`);
-                    showFeedback('🗺️ Mapa en tiempo real activo');
-                },
-                onFailure: (err) => {
-                    console.log('MQTT Orion error:', err.errorMessage);
-                    setTimeout(connectOrionMqtt, 10000);
-                },
+                useSSL: true, userName: creds.user, password: creds.pass,
+                onSuccess: () => { mqttClient.subscribe('ctrls/#'); mqttClient.subscribe('maps/#'); showFeedback('🗺️ Mapa en tiempo real activo'); },
+                onFailure: () => setTimeout(connectOrionMqtt, 10000),
                 keepAliveInterval: 60
             });
         } catch(e) {
-            console.log('Error conectando MQTT Orion:', e.message);
+            console.log('Error MQTT Orion:', e.message);
             setTimeout(connectOrionMqtt, 15000);
         }
     }
 
-    function loadMapImage(robotId) {
-        // Cargar PGM desde URL de Orion
+    function loadMapImage() {
         const pgmUrl = 'https://global-robotmp.orionstar.com/media/orics/down/b002_20250830_a84e1ee77b15e036d4d95e7f8fbd1a65.pgm';
-        // Convertir PGM a canvas imagen
         fetch(pgmUrl)
             .then(r => r.arrayBuffer())
             .then(buf => {
                 const bytes = new Uint8Array(buf);
-                // Parsear header PGM
                 let i = 0, lines = [], line = '';
                 while (lines.length < 3) {
                     const ch = String.fromCharCode(bytes[i++]);
-                    if (ch === '\n') {
-                        if (!line.startsWith('#')) lines.push(line);
-                        line = '';
-                    } else line += ch;
+                    if (ch === '\n') { if (!line.startsWith('#')) lines.push(line); line = ''; }
+                    else line += ch;
                 }
                 const [w, h] = lines[1].split(' ').map(Number);
                 const offscreen = document.createElement('canvas');
@@ -1279,22 +1192,29 @@
                 for (let p = 0; p < w * h; p++) {
                     const v = bytes[i + p];
                     let r, g, b, a;
-                    if (v >= 250)      { r=255; g=255; b=255; a=255; } // libre
-                    else if (v < 50)   { r=15;  g=20;  b=40;  a=255; } // pared
-                    else               { r=30;  g=35;  b=55;  a=200; } // desconocido
-                    imgData.data[p*4]   = r;
-                    imgData.data[p*4+1] = g;
-                    imgData.data[p*4+2] = b;
-                    imgData.data[p*4+3] = a;
+                    if (v >= 250)    { r=255; g=255; b=255; a=255; }
+                    else if (v < 50) { r=15;  g=20;  b=40;  a=255; }
+                    else             { r=30;  g=35;  b=55;  a=200; }
+                    imgData.data[p*4]=r; imgData.data[p*4+1]=g; imgData.data[p*4+2]=b; imgData.data[p*4+3]=a;
                 }
                 ctx2.putImageData(imgData, 0, 0);
                 mapImage = offscreen;
-                console.log('✅ Imagen del mapa cargada:', w, 'x', h);
+                console.log('✅ Mapa PGM cargado:', w, 'x', h);
                 drawMap();
             })
-            .catch(e => console.log('Error cargando mapa:', e));
+            .catch(e => console.log('Error cargando PGM:', e));
     }
 
+    // ── Feedback ───────────────────────────────────────────────────────
+    function showFeedback(msg, color = 'green') {
+        const el = document.getElementById('feedback');
+        el.textContent = msg; el.style.display = 'block';
+        el.style.color = color === 'red' ? 'var(--red)' : color === 'yellow' ? 'var(--yellow)' : 'var(--green)';
+        clearTimeout(el._timeout);
+        el._timeout = setTimeout(() => el.style.display = 'none', 2500);
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────
     window.onload = () => {
         const savedIp     = localStorage.getItem('robotIp');
         const savedUrl    = localStorage.getItem('relayUrl');
