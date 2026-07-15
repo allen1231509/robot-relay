@@ -25,6 +25,27 @@
         .mode-tab { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); cursor: pointer; font-size: 12px; text-align: center; }
         .mode-tab.active { border-color: var(--green); color: var(--green); background: #00ff8811; }
         .conn-field { display: flex; flex-direction: column; gap: 6px; }
+        .conn-field label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ── Autocompletado de participantes (tabla persons, Supabase) ── */
+        .af-suggestions {
+            position: absolute; left: 0; right: 0; top: 100%; margin-top: 4px;
+            background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+            max-height: 180px; overflow-y: auto; z-index: 5;
+            box-shadow: 0 12px 28px rgba(0,0,0,.5);
+            display: none;
+        }
+        .af-suggestions.visible { display: block; }
+        .af-suggestion {
+            padding: 10px 12px; font-size: 13.5px; color: var(--text); cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .af-suggestion:last-child { border-bottom: none; }
+        .af-suggestion:active { background: #00ff8822; }
+        .af-suggestion .role { font-size: 10.5px; color: var(--muted); text-transform: uppercase; }
+        .af-suggestion.hint { color: var(--muted); font-style: italic; font-size: 12px; cursor: default; }
+        .af-suggestion.hint:active { background: none; }
         input[type=text], input[type=password] { padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 16px; width: 100%; }
         input:focus { outline: none; border-color: var(--green); }
         #connectBtn { padding: 16px; border-radius: 10px; border: none; background: var(--green); color: #000; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; }
@@ -227,6 +248,7 @@
         <div class="tab active" onclick="switchTab('control')"><span class="tab-icon">🕹️</span>Control</div>
         <div class="tab" onclick="switchTab('camera')"><span class="tab-icon">📷</span>Cámara</div>
         <div class="tab" onclick="switchTab('announce')"><span class="tab-icon">📢</span>Anuncios</div>
+        <div class="tab" onclick="switchTab('agenda')"><span class="tab-icon">📅</span>Agenda</div>
         <div class="tab" onclick="switchTab('places')"><span class="tab-icon">📍</span>Lugares</div>
         <div class="tab" onclick="switchTab('status')"><span class="tab-icon">📊</span>Estado</div>
         <div class="tab" onclick="switchTab('persons')"><span class="tab-icon">👤</span>Personas</div>
@@ -341,6 +363,30 @@
             </div>
         </div>
 
+        <!-- Agenda -->
+        <div id="tab-agenda" class="tabPanel">
+            <div class="card">
+                <div class="card-title">📅 Agendar reunión (Microsoft 365)</div>
+                <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Crea un evento en el calendario M365. Duración por defecto: 30 minutos.</p>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                    <div class="conn-field">
+                        <label>Asunto de la reunión</label>
+                        <input id="agendaSubject" class="text-input" type="text" placeholder="Ej: Revisión de diseño">
+                    </div>
+                    <div class="conn-field">
+                        <label>Fecha y hora de inicio</label>
+                        <input id="agendaStart" class="text-input" type="datetime-local">
+                    </div>
+                    <div class="conn-field" style="position:relative">
+                        <label>Participantes</label>
+                        <input id="agendaAttendees" class="text-input" type="text" placeholder="Escribe un nombre..." autocomplete="off">
+                        <div class="af-suggestions" id="agendaSuggestions"></div>
+                    </div>
+                    <button id="agendaBtn" class="action-btn blue" style="width:100%" onclick="sendCrearReunion()">📅 Agendar</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Lugares -->
         <div id="tab-places" class="tabPanel">
             <div class="card">
@@ -432,6 +478,16 @@
     const RELAY_URL    = 'robot-relay-34o6.onrender.com';
     const RELAY_SECRET = 'mirobotclave2024';
     const CAM_W = 640, CAM_H = 480;
+
+    // URL base del backend M365 (zoxirobit-m365, Node/Express + Graph API).
+    // Este panel puede abrirse desde cualquier lugar sin que el robot esté
+    // cerca, así que "Agendar" pega directo a este backend por HTTP en vez
+    // de pasar por el WebSocket del robot. Configurable: cambiar cuando el
+    // backend esté desplegado en un host público (localhost solo sirve para
+    // pruebas en la misma máquina — y si este panel corre sobre https, el
+    // backend también deberá servirse por https, o el navegador bloqueará
+    // el fetch por contenido mixto).
+    const M365_BASE_URL = 'http://localhost:3000';
 
     // Mapa PGM: resolución 0.05 m/px, tamaño y origen en coordenadas mundo
     const PGM_RESOLUTION = 0.05;
@@ -582,11 +638,12 @@
 
     // ── Tabs ───────────────────────────────────────────────────────────
     function switchTab(name) {
-        const tabNames = ['control','camera','announce','places','status','persons','map'];
+        const tabNames = ['control','camera','announce','agenda','places','status','persons','map'];
         document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabNames[i] === name));
         document.querySelectorAll('.tabPanel').forEach(p => p.classList.remove('active'));
         document.getElementById(`tab-${name}`).classList.add('active');
         if (name === 'map') { if (!mapInitialized && mapPlaces.length) initMapView(); drawMap(); }
+        if (name === 'agenda') ensurePeopleLoaded();
     }
 
     // ── D-Pad ──────────────────────────────────────────────────────────
@@ -1205,6 +1262,133 @@
             .catch(e => console.log('Error cargando PGM:', e));
     }
 
+    // ── Agenda M365 ────────────────────────────────────────────────────
+    // Autocompletado de participantes: trae la tabla persons (Supabase, vía
+    // el HF Space) UNA vez y filtra en el cliente mientras se escribe — más
+    // rápido que consultar por cada tecla. Si no hay coincidencia, el campo
+    // NO se bloquea: se avisa y se puede escribir el correo/nombre a mano.
+    let knownPeople = null;
+    let peopleFetchPromise = null;
+
+    function ensurePeopleLoaded() {
+        if (knownPeople || peopleFetchPromise) return;
+        peopleFetchPromise = fetch('https://allen23r32-facezoxi.hf.space/people')
+            .then(r => r.json())
+            .then(data => { knownPeople = (data && data.ok && data.people) ? data.people : []; })
+            .catch(() => { knownPeople = []; })
+            .finally(() => { peopleFetchPromise = null; });
+    }
+
+    function currentAttendeeToken(input) {
+        const parts = input.value.split(',');
+        return parts[parts.length - 1].trim();
+    }
+
+    function hideAgendaSuggestions() {
+        const box = document.getElementById('agendaSuggestions');
+        box.classList.remove('visible');
+        box.innerHTML = '';
+    }
+
+    function renderAgendaSuggestions(matches) {
+        const box = document.getElementById('agendaSuggestions');
+        if (!matches.length) { showAgendaNoMatchHint(); return; }
+        box.innerHTML = matches.slice(0, 6).map(p =>
+            `<div class="af-suggestion" data-name="${(p.name || '').replace(/"/g, '&quot;')}">
+                <span>${p.name}</span><span class="role">${p.role || ''}</span>
+             </div>`
+        ).join('');
+        box.classList.add('visible');
+        box.querySelectorAll('.af-suggestion').forEach(el => {
+            el.addEventListener('mousedown', (e) => { e.preventDefault(); selectAgendaSuggestion(el.getAttribute('data-name')); });
+        });
+    }
+
+    function showAgendaNoMatchHint() {
+        const box = document.getElementById('agendaSuggestions');
+        box.innerHTML = '<div class="af-suggestion hint">Sin coincidencias — puedes escribir el correo o nombre completo a mano</div>';
+        box.classList.add('visible');
+    }
+
+    function selectAgendaSuggestion(name) {
+        const input = document.getElementById('agendaAttendees');
+        const parts = input.value.split(',');
+        parts[parts.length - 1] = ' ' + name;
+        input.value = parts.join(',').replace(/^\s+/, '') + ', ';
+        hideAgendaSuggestions();
+        input.focus();
+    }
+
+    function setupAgendaAutocomplete() {
+        const input = document.getElementById('agendaAttendees');
+        if (!input) return;
+        input.addEventListener('input', () => {
+            const token = currentAttendeeToken(input);
+            if (!token || !knownPeople) { hideAgendaSuggestions(); return; }
+            const q = token.toLowerCase();
+            renderAgendaSuggestions(knownPeople.filter(p => p.name && p.name.toLowerCase().includes(q)));
+        });
+        input.addEventListener('blur', () => setTimeout(hideAgendaSuggestions, 150));
+    }
+
+    // yyyy-MM-ddTHH:mm:ss en hora local, sin zona horaria — mismo formato
+    // que manda AgendaClient.kt (DateTimeFormatter.ISO_LOCAL_DATE_TIME).
+    function toLocalIso(dt) {
+        const pad = n => String(n).padStart(2, '0');
+        return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()) + 'T' +
+               pad(dt.getHours()) + ':' + pad(dt.getMinutes()) + ':' + pad(dt.getSeconds());
+    }
+
+    // POST directo al backend M365 (no pasa por el WebSocket del robot).
+    // faceId va vacío: no hay ninguna persona reconocida por cámara desde
+    // este panel — el backend usa su cuenta de servicio (SERVICE_FACE_ID).
+    function sendCrearReunion() {
+        const subject      = document.getElementById('agendaSubject').value.trim();
+        const startRaw     = document.getElementById('agendaStart').value;
+        const attendeesRaw = document.getElementById('agendaAttendees').value.trim();
+
+        if (!subject)  { showFeedback('⚠️ Escribe el asunto de la reunión', 'yellow'); return; }
+        if (!startRaw) { showFeedback('⚠️ Elige fecha y hora de inicio', 'yellow'); return; }
+
+        const startDate = new Date(startRaw);
+        if (isNaN(startDate.getTime())) { showFeedback('⚠️ Fecha de inicio inválida', 'yellow'); return; }
+        const endDate = new Date(startDate.getTime() + 30 * 60000); // duración por defecto — ajustable
+
+        const attendees = attendeesRaw ? attendeesRaw.split(',').map(a => a.trim()).filter(a => a) : [];
+
+        const btn = document.getElementById('agendaBtn');
+        btn.disabled = true; btn.textContent = 'Agendando...';
+        hideAgendaSuggestions();
+
+        fetch(`${M365_BASE_URL}/agenda/crear`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                faceId: '',
+                asunto: subject,
+                inicio: toLocalIso(startDate),
+                fin: toLocalIso(endDate),
+                participantes: attendees
+            })
+        })
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            btn.disabled = false; btn.textContent = '📅 Agendar';
+            if (ok) {
+                showFeedback(`✅ Reunión "${data.asunto}" agendada`);
+                document.getElementById('agendaSubject').value = '';
+                document.getElementById('agendaStart').value = '';
+                document.getElementById('agendaAttendees').value = '';
+            } else {
+                showFeedback('❌ ' + (data.error || 'No se pudo agendar la reunión'), 'red');
+            }
+        })
+        .catch(() => {
+            btn.disabled = false; btn.textContent = '📅 Agendar';
+            showFeedback('❌ No se pudo conectar con el backend M365', 'red');
+        });
+    }
+
     // ── Feedback ───────────────────────────────────────────────────────
     function showFeedback(msg, color = 'green') {
         const el = document.getElementById('feedback');
@@ -1224,6 +1408,7 @@
         if (savedSecret) document.getElementById('relaySecret').value = savedSecret;
         setupDpad();
         setupMapDrag();
+        setupAgendaAutocomplete();
     };
 </script>
 </body>

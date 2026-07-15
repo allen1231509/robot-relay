@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=1280"/>
+  <title>ZoxiRobit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Exo+2:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg-deep:#060810;
+      --cyan:#00CCFF;
+      --cyan-bright:#6FE6FF;
+      --cyan-dim:#0E5C73;
+      --cyan-faint:rgba(0,204,255,.12);
+      --cyan-line:rgba(0,204,255,.24);
+      --cyan-glow:rgba(0,204,255,.55);
+      --love:#FF5C8A;
+      --love-glow:rgba(255,92,138,.55);
+      --online:#2BE38B;
+      --online-glow:rgba(43,227,139,.5);
+      --amber:#FFB020;
+      --error:#FF4D5E;
+      --error-glow:rgba(255,77,94,.5);
+      --text-hi:#EAF6FF;
+      --text-mid:rgba(234,246,255,.62);
+      --text-low:rgba(234,246,255,.34);
+      --eye-color:var(--cyan);
+      --eye-color-love:var(--love);
+      --eye-glow:var(--cyan-glow);
+      --bubble-border:var(--cyan);
+      --bubble-fill:rgba(6,8,16,.70);
+      --bubble-text:var(--text-hi);
+      --name-color:var(--text-mid);
+      --font-display:'Orbitron',sans-serif;
+      --font-body:'Exo 2',sans-serif;
+      --ease-soft:cubic-bezier(.4,0,.2,1);
+      --ease-bounce:cubic-bezier(.34,1.56,.64,1);
+      --t-float:4200ms;
+      --glow-soft:0 0 18px rgba(0,204,255,.28);
+      --shadow-panel:0 8px 40px rgba(0,0,0,.55);
+      --r-pill:999px;
+      --fs-speech:18px;
+      --fs-name:13px;
+      --fw-medium:500;
+
+      /* Alturas de las franjas — ajusta aquí si tu pantalla es distinta */
+      --h-top:64px;       /* wordmark */
+      --h-eyes:46%;       /* zona de ojos, % del alto total */
+      --h-bubble:118px;   /* alto fijo reservado para el bubble (no crece más) */
+      --h-status:56px;    /* franja del status pill */
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      width:100%;height:100%;overflow:hidden;
+      background:var(--bg-deep);
+      font-family:var(--font-body);
+    }
+
+    #screen{
+      position:fixed;inset:0;
+      background:radial-gradient(120% 115% at 50% 36%,#0c1424 0%,#070a14 52%,var(--bg-deep) 100%);
+      display:grid;
+      grid-template-rows: var(--h-top) 1fr var(--h-bubble) var(--h-status);
+      overflow:hidden;
+    }
+
+    #horizon{
+      position:absolute;left:50%;top:64%;transform:translateX(-50%);
+      width:760px;height:220px;
+      background:radial-gradient(closest-side,rgba(0,204,255,.10),transparent);
+      filter:blur(8px);pointer-events:none;
+    }
+
+    /* ── FRANJA 1: wordmark ── */
+    #wordmark{
+      grid-row:1;
+      display:flex;align-items:center;gap:10px;
+      padding-left:36px;z-index:3;
+    }
+    #wordmark .dot{
+      width:7px;height:7px;border-radius:50%;
+      background:var(--cyan);
+      box-shadow:0 0 10px var(--cyan-glow);
+    }
+    #wordmark .name{
+      font-family:var(--font-display);font-weight:600;
+      font-size:12px;letter-spacing:.26em;
+      color:var(--name-color);text-transform:uppercase;
+    }
+    #wordmark .name span{color:var(--text-low)}
+
+    /* ── FRANJA 2: ojos — espacio propio, fijo, nunca lo invade el bubble ── */
+    #face-wrap{
+      grid-row:2;
+      display:flex;align-items:center;justify-content:center;
+      min-height:0;
+      position:relative;
+      z-index:2;
+    }
+
+    #face-svg{overflow:visible;}
+
+    .zr-floatg{
+      animation:zr-float var(--t-float) ease-in-out infinite;
+      transform-box:fill-box;transform-origin:center;
+    }
+    @keyframes zr-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+    .zr-eyes{transition:transform 120ms var(--ease-soft);}
+
+    .zr-pop{
+      animation:zr-pop 420ms var(--ease-bounce);
+      transform-box:fill-box;transform-origin:center;
+    }
+    @keyframes zr-pop{0%{transform:scale(.86)}60%{transform:scale(1.07)}100%{transform:scale(1)}}
+
+    .zr-heart{
+      animation:zr-beat 900ms ease-in-out infinite;
+      transform-box:fill-box;transform-origin:center;
+    }
+    @keyframes zr-beat{0%,100%{transform:scale(1)}30%{transform:scale(1.12)}45%{transform:scale(1)}60%{transform:scale(1.08)}}
+
+    .zr-tear{
+      fill:var(--cyan);
+      animation:zr-tear 2600ms ease-in infinite;
+      transform-box:fill-box;transform-origin:center;
+    }
+    @keyframes zr-tear{0%,55%{transform:translateY(0);opacity:0}70%{opacity:1}100%{transform:translateY(58px);opacity:0}}
+
+    .zr-ring{opacity:0;}
+    .zr-ring-a{animation:zr-ring 2400ms ease-out infinite;}
+    .zr-ring-b{animation:zr-ring 2400ms ease-out infinite 1200ms;}
+    @keyframes zr-ring{0%{transform:scale(.55);opacity:.55}100%{transform:scale(1.1);opacity:0}}
+    .zr-rings{transform-box:view-box;transform-origin:center;}
+
+    @media(prefers-reduced-motion:reduce){
+      .zr-floatg,.zr-heart,.zr-tear,.zr-ring-a,.zr-ring-b{animation:none!important;}
+    }
+
+    /* ── FRANJA 3: SPEECH BUBBLE — alto fijo, nunca crece fuera de su franja ── */
+    #bubble-wrap{
+      grid-row:3;
+      display:flex;align-items:center;justify-content:center;
+      padding:0 5%;
+      opacity:0;transition:opacity .3s var(--ease-soft);
+      min-height:0;
+      overflow:hidden;
+      z-index:2;
+    }
+    #bubble-wrap.visible{opacity:1;}
+
+    #bubble{
+      display:flex;align-items:center;gap:10px;
+      width:100%;
+      max-width:900px;
+      max-height:calc(var(--h-bubble) - 16px);
+      padding:12px 26px;
+      border:2px solid var(--bubble-border);
+      border-radius:24px;
+      background:var(--bubble-fill);
+      backdrop-filter:blur(8px);
+      box-shadow:var(--glow-soft),inset 0 0 18px rgba(0,204,255,.08);
+      color:var(--bubble-text);
+      font:var(--fw-medium) var(--fs-speech)/1.3 var(--font-body);
+      letter-spacing:.01em;
+      text-align:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+
+    #bubble-text{
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      -webkit-line-clamp:3;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      width:100%;
+    }
+
+    .zr-dots{display:inline-flex;gap:10px;padding:6px 4px;}
+    .zr-dots i{
+      width:12px;height:12px;border-radius:50%;
+      background:var(--cyan);display:block;
+      box-shadow:0 0 14px var(--cyan-glow);
+      animation:zr-bounce 1.1s ease-in-out infinite;
+    }
+    .zr-dots i:nth-child(2){animation-delay:.18s}
+    .zr-dots i:nth-child(3){animation-delay:.36s}
+    @keyframes zr-bounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-8px);opacity:1}}
+
+    /* ── FRANJA 4: STATUS PILL — siempre en su propia franja, jamás se monta ── */
+    #status-pill-wrap{
+      grid-row:4;
+      display:flex;align-items:center;justify-content:center;
+      padding-bottom:18px;
+      z-index:3;
+    }
+    #status-pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 18px;border-radius:var(--r-pill);
+      border:1px solid var(--cyan-line);
+      background:rgba(0,204,255,.06);
+      font-family:var(--font-display);font-size:10px;
+      font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+      color:var(--text-mid);
+      transition:color .3s,border-color .3s;
+    }
+    #status-dot{
+      width:6px;height:6px;border-radius:50%;
+      background:var(--online);
+      box-shadow:0 0 8px var(--online-glow);
+      transition:background .3s,box-shadow .3s;
+    }
+
+    /* ── BOTÓN FLOTANTE "Agenda" — siempre visible, independiente del saludo ── */
+    #agendaFab{
+      position:fixed;right:26px;bottom:26px;z-index:50;
+      display:flex;align-items:center;gap:8px;
+      padding:14px 22px;border-radius:var(--r-pill);
+      border:2px solid var(--cyan);
+      background:rgba(6,8,16,.82);
+      color:var(--text-hi);
+      font-family:var(--font-display);font-size:12px;font-weight:600;
+      letter-spacing:.14em;text-transform:uppercase;
+      cursor:pointer;box-shadow:var(--glow-soft),0 8px 24px rgba(0,0,0,.5);
+      backdrop-filter:blur(6px);
+      transition:transform .15s var(--ease-soft);
+    }
+    #agendaFab:active{transform:scale(.95)}
+
+    /* ── MODAL de agendado manual ── */
+    #agendaOverlay{
+      position:fixed;inset:0;z-index:60;
+      background:rgba(3,4,8,.72);backdrop-filter:blur(4px);
+      display:none;align-items:center;justify-content:center;padding:24px;
+    }
+    #agendaOverlay.visible{display:flex}
+    #agendaModal{
+      width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
+      background:linear-gradient(160deg,#0c1424 0%,#070a14 60%,var(--bg-deep) 100%);
+      border:1.5px solid var(--cyan-line);border-radius:22px;
+      box-shadow:var(--shadow-panel),0 0 40px rgba(0,204,255,.12);
+      padding:26px 28px 24px;color:var(--text-hi);
+    }
+    #agendaModal h2{
+      font-family:var(--font-display);font-size:14px;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--cyan-bright);font-weight:600;margin-bottom:4px;
+    }
+    #agendaModal .subtitle{font-size:12.5px;color:var(--text-mid);margin-bottom:20px;line-height:1.5}
+    .af-field{margin-bottom:16px;position:relative}
+    .af-field label{
+      display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--text-low);margin-bottom:7px;
+    }
+    .af-field input{
+      width:100%;padding:13px 14px;border-radius:12px;
+      border:1.5px solid var(--cyan-line);background:rgba(255,255,255,.03);
+      color:var(--text-hi);font:var(--fw-medium) 15px/1.3 var(--font-body);outline:none;
+    }
+    .af-field input::placeholder{color:var(--text-low)}
+    .af-field input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,204,255,.14)}
+    .af-field input[type="datetime-local"]{color-scheme:dark}
+    .af-suggestions{
+      position:absolute;left:0;right:0;top:100%;margin-top:6px;
+      background:rgba(8,11,20,.97);border:1px solid var(--cyan-line);border-radius:12px;
+      max-height:190px;overflow-y:auto;z-index:5;box-shadow:0 12px 30px rgba(0,0,0,.5);
+      display:none;
+    }
+    .af-suggestions.visible{display:block}
+    .af-suggestion{
+      padding:11px 14px;font-size:14px;color:var(--text-hi);cursor:pointer;
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .af-suggestion:last-child{border-bottom:none}
+    .af-suggestion:active{background:rgba(0,204,255,.12)}
+    .af-suggestion .role{font-size:11px;color:var(--text-low);text-transform:uppercase;letter-spacing:.06em}
+    .af-suggestion.af-hint{color:var(--text-low);font-style:italic;cursor:default;font-size:12.5px}
+    .af-suggestion.af-hint:active{background:none}
+    .af-actions{display:flex;gap:10px;margin-top:22px}
+    .af-btn{flex:1;padding:14px;border-radius:12px;border:none;font:600 14px/1 var(--font-body);letter-spacing:.02em;cursor:pointer}
+    .af-btn.primary{background:var(--cyan);color:#04141a}
+    .af-btn.primary:disabled{opacity:.55}
+    .af-btn.ghost{background:transparent;border:1.5px solid var(--cyan-line);color:var(--text-mid)}
+    .af-feedback{margin-top:14px;font-size:13px;line-height:1.5;text-align:center;min-height:18px}
+    .af-feedback.ok{color:var(--online)}
+    .af-feedback.err{color:var(--error)}
+  </style>
+</head>
+<body>
+
+<div id="screen">
+  <div id="horizon"></div>
+
+  <div id="wordmark">
+    <div class="dot"></div>
+    <div class="name">Zoxi<span>Robit</span></div>
+  </div>
+
+  <div id="face-wrap">
+    <!-- Ojos: 260x180 -->
+    <svg id="face-svg" viewBox="0 0 520 360" width="260" height="180">
+      <g id="rings" class="zr-rings" fill="none" stroke="#00CCFF" stroke-width="2" style="display:none">
+        <circle class="zr-ring zr-ring-a" cx="260" cy="180" r="150"/>
+        <circle class="zr-ring zr-ring-b" cx="260" cy="180" r="150"/>
+      </g>
+      <g class="zr-floatg">
+        <g id="eyes" class="zr-eyes"></g>
+      </g>
+    </svg>
+  </div>
+
+  <div id="bubble-wrap">
+    <div id="bubble">
+      <span id="bubble-text"></span>
+    </div>
+  </div>
+
+  <div id="status-pill-wrap">
+    <div id="status-pill">
+      <div id="status-dot"></div>
+      <span id="status-label">En línea</span>
+    </div>
+  </div>
+</div>
+
+<button id="agendaFab" onclick="openAgendaModal()">📅 Agenda</button>
+
+<div id="agendaOverlay" onclick="if(event.target===this) closeAgendaModal()">
+  <div id="agendaModal">
+    <h2>📅 Agendar reunión</h2>
+    <p class="subtitle">Microsoft 365 · disponible en cualquier momento, sin necesidad de reconocimiento facial ni voz.</p>
+
+    <div class="af-field">
+      <label>Asunto de la reunión</label>
+      <input id="afSubject" type="text" placeholder="Ej: Revisión de diseño" autocomplete="off">
+    </div>
+
+    <div class="af-field">
+      <label>Fecha y hora de inicio</label>
+      <input id="afStart" type="datetime-local">
+    </div>
+
+    <div class="af-field">
+      <label>Participantes</label>
+      <input id="afAttendees" type="text" placeholder="Escribe un nombre..." autocomplete="off">
+      <div class="af-suggestions" id="afSuggestions"></div>
+    </div>
+
+    <div class="af-actions">
+      <button class="af-btn ghost" onclick="closeAgendaModal()">Cancelar</button>
+      <button class="af-btn primary" id="afSubmitBtn" onclick="submitAgenda()">📅 Agendar</button>
+    </div>
+
+    <div class="af-feedback" id="afFeedback"></div>
+  </div>
+</div>
+
+<script>
+  const VB_W=520,VB_H=360,CY=180,LX=178,RX=342;
+  const CYAN='#00CCFF',LOVE='#FF5C8A';
+  const NS='http://www.w3.org/2000/svg';
+
+  let currentExpr='neutral';
+  let blinkTimer=null;
+  let typeTimer=null;
+
+  function svgEl(tag,attrs){
+    const el=document.createElementNS(NS,tag);
+    for(const[k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+    return el;
+  }
+  function capsule(cx,cy,w,h,cls){
+    const el=svgEl('rect',{x:cx-w/2,y:cy-h/2,width:w,height:h,rx:w/2});
+    if(cls) el.setAttribute('class',cls);
+    return el;
+  }
+  function heartPath(cx,cy,s){
+    return `M ${cx} ${cy+s*.75} C ${cx-s*1.3} ${cy-s*.4},${cx-s*.55} ${cy-s*1.25},${cx} ${cy-s*.45} C ${cx+s*.55} ${cy-s*1.25},${cx+s*1.3} ${cy-s*.4},${cx} ${cy+s*.75} Z`;
+  }
+
+  function renderEyes(expr){
+    const g=document.createElementNS(NS,'g');
+    switch(expr){
+      case 'feliz':{
+        const sg=svgEl('g',{fill:'none',stroke:CYAN,'stroke-width':'34','stroke-linecap':'round'});
+        sg.appendChild(svgEl('path',{d:`M ${LX-60} ${CY+24} Q ${LX} ${CY-78} ${LX+60} ${CY+24}`}));
+        sg.appendChild(svgEl('path',{d:`M ${RX-60} ${CY+24} Q ${RX} ${CY-78} ${RX+60} ${CY+24}`}));
+        g.appendChild(sg);break;
+      }
+      case 'amor':{
+        const hg=svgEl('g',{fill:LOVE,class:'zr-heart'});
+        hg.appendChild(svgEl('path',{d:heartPath(LX,CY,64)}));
+        hg.appendChild(svgEl('path',{d:heartPath(RX,CY,64)}));
+        g.appendChild(hg);break;
+      }
+      case 'sorprendido':{
+        const cg=svgEl('g',{fill:CYAN});
+        cg.appendChild(svgEl('circle',{cx:LX,cy:CY-8,r:74}));
+        cg.appendChild(svgEl('circle',{cx:RX,cy:CY-8,r:74}));
+        g.appendChild(cg);break;
+      }
+      case 'pensando':{
+        const pg=svgEl('g',{fill:CYAN});
+        pg.appendChild(capsule(LX+14,CY-26,92,150));
+        pg.appendChild(capsule(RX+14,CY-30,96,40));
+        g.appendChild(pg);break;
+      }
+      case 'triste':{
+        const tg=svgEl('g',{fill:CYAN});
+        const wL=svgEl('g',{transform:`rotate(20 ${LX} ${CY+18})`});
+        wL.appendChild(capsule(LX,CY+18,80,118));
+        const wR=svgEl('g',{transform:`rotate(-20 ${RX} ${CY+18})`});
+        wR.appendChild(capsule(RX,CY+18,80,118));
+        tg.appendChild(wL);tg.appendChild(wR);
+        tg.appendChild(svgEl('circle',{cx:LX-30,cy:CY+96,r:11,class:'zr-tear'}));
+        g.appendChild(tg);break;
+      }
+      case 'escuchando':{
+        const eg=svgEl('g',{fill:CYAN});
+        eg.appendChild(capsule(LX,CY,100,168));
+        eg.appendChild(capsule(RX,CY,100,168));
+        g.appendChild(eg);
+        document.getElementById('rings').style.display='';
+        break;
+      }
+      default:{
+        const ng=svgEl('g',{fill:CYAN});
+        ng.appendChild(capsule(LX,CY,96,162));
+        ng.appendChild(capsule(RX,CY,96,162));
+        g.appendChild(ng);
+      }
+    }
+    return g;
+  }
+
+  function setExpression(expr){
+    if(expr===currentExpr) return;
+    currentExpr=expr;
+    if(expr!=='escuchando') document.getElementById('rings').style.display='none';
+    const isLove=expr==='amor';
+    const glowColor=isLove?'rgba(255,92,138,.55)':'rgba(0,204,255,.55)';
+    document.getElementById('face-svg').style.filter=`drop-shadow(0 0 14px ${glowColor}) drop-shadow(0 0 40px ${glowColor})`;
+    const eyesG=document.getElementById('eyes');
+    eyesG.innerHTML='';
+    eyesG.classList.remove('zr-pop');
+    void eyesG.offsetWidth;
+    eyesG.classList.add('zr-pop');
+    eyesG.appendChild(renderEyes(expr));
+    setTimeout(()=>eyesG.classList.remove('zr-pop'),420);
+    resetBlink(expr);
+  }
+
+  function resetBlink(expr){
+    if(blinkTimer){clearTimeout(blinkTimer);blinkTimer=null;}
+    if(expr==='sorprendido'||expr==='amor') return;
+    scheduleBlink();
+  }
+  function scheduleBlink(){
+    blinkTimer=setTimeout(()=>{
+      const eyesG=document.getElementById('eyes');
+      eyesG.style.transform='scaleY(0.08)';
+      eyesG.style.transformOrigin=`${(LX+RX)/2}px ${CY}px`;
+      setTimeout(()=>{eyesG.style.transform='scaleY(1)';scheduleBlink();},130);
+    },1800+Math.random()*3200);
+  }
+
+  function showBubble(text,thinking){
+    const wrap=document.getElementById('bubble-wrap');
+    const bubble=document.getElementById('bubble');
+    if(typeTimer){clearInterval(typeTimer);typeTimer=null;}
+    if(!text&&!thinking){wrap.classList.remove('visible');return;}
+    wrap.classList.add('visible');
+    if(thinking){
+      bubble.innerHTML='<span class="zr-dots"><i></i><i></i><i></i></span>';
+      return;
+    }
+    bubble.innerHTML='<span id="bubble-text"></span>';
+    const sp=document.getElementById('bubble-text');
+    let i=0;sp.textContent='';
+    typeTimer=setInterval(()=>{
+      i++;sp.textContent=text.slice(0,i);
+      if(i>=text.length){clearInterval(typeTimer);typeTimer=null;}
+    },28);
+  }
+
+  const STATUS_CFG={
+    online:   {color:'#2BE38B',glow:'rgba(43,227,139,.5)',  label:'En línea'},
+    listening:{color:'#00CCFF',glow:'rgba(0,204,255,.55)',  label:'Escuchando…'},
+    busy:     {color:'#FFB020',glow:'rgba(255,176,32,.5)',  label:'Procesando…'},
+    error:    {color:'#FF4D5E',glow:'rgba(255,77,94,.5)',   label:'Sin conexión'},
+  };
+  function setStatus(tone,label){
+    const cfg=STATUS_CFG[tone]||STATUS_CFG.online;
+    document.getElementById('status-dot').style.background=cfg.color;
+    document.getElementById('status-dot').style.boxShadow=`0 0 8px ${cfg.glow}`;
+    document.getElementById('status-label').textContent=label||cfg.label;
+  }
+
+  // Bridge Kotlin → JS
+  function updateStatus(ip,relay,expression){
+    if(!expression) return;
+    switch(expression){
+      case 'happy':      setExpression('feliz');      showBubble('¡Hola! ¿En qué te puedo ayudar?',false); setStatus('online');break;
+      case 'love':       setExpression('amor');       showBubble('¡Qué bueno verte!',false);               setStatus('online');break;
+      case 'think':      setExpression('pensando');   showBubble('',true);                                  setStatus('busy','Identificando…');break;
+      case 'wow':        setExpression('sorprendido');showBubble('¡Oh! No te había visto.',false);          setStatus('online');break;
+      case 'sad':        setExpression('triste');     showBubble('Lo siento, hubo un error.',false);        setStatus('error');break;
+      case 'listen':
+      case 'escuchando': setExpression('escuchando'); showBubble('',false);                                 setStatus('listening');break;
+      case 'hablando':   setExpression('hablando');                                                          setStatus('online');break;
+      default:           setExpression(expression);
+    }
+  }
+
+  function showFace(expression,bubbleText,statusTone,statusLabel,thinking){
+    setExpression(expression||'neutral');
+    showBubble(bubbleText||'',!!thinking);
+    setStatus(statusTone||'online',statusLabel);
+  }
+
+  function boot(){
+    setExpression('neutral');
+    showBubble('',false);
+    setStatus('online');
+    setTimeout(()=>{
+      setExpression('feliz');
+      showBubble('¡Hola! ¿En qué te puedo ayudar?',false);
+    },1500);
+  }
+  boot();
+
+  // ══════════════════════════════════════════════════════════════
+  // ── AGENDAR MANUAL — formulario táctil, independiente del saludo/voz ──
+  // Reutiliza el mismo WebSocket (ws://localhost:8080) y la acción
+  // "crearReunion" que ya maneja RobotServer.kt para el panel web
+  // (index.html) — no requiere ningún cambio en Kotlin.
+  // ══════════════════════════════════════════════════════════════
+  let agendaWs = null;
+  let knownPeople = null;       // cache de la tabla persons (Supabase, vía HF Space)
+  let peopleFetchPromise = null;
+
+  function openAgendaModal(){
+    document.getElementById('agendaOverlay').classList.add('visible');
+    const fb = document.getElementById('afFeedback');
+    fb.textContent = ''; fb.className = 'af-feedback';
+    ensurePeopleLoaded();
+  }
+
+  function closeAgendaModal(){
+    document.getElementById('agendaOverlay').classList.remove('visible');
+    hideSuggestions();
+    resetAgendaForm();
+  }
+
+  function resetAgendaForm(){
+    document.getElementById('afSubject').value = '';
+    document.getElementById('afStart').value = '';
+    document.getElementById('afAttendees').value = '';
+    const btn = document.getElementById('afSubmitBtn');
+    btn.disabled = false; btn.textContent = '📅 Agendar';
+  }
+
+  // ── Autocompletado de personas ──────────────────────────────
+  // Se trae la lista UNA vez (no por cada tecla, para que la sugerencia
+  // aparezca al instante) y se filtra en el cliente mientras se escribe.
+  function ensurePeopleLoaded(){
+    if (knownPeople || peopleFetchPromise) return;
+    peopleFetchPromise = fetch('https://allen23r32-facezoxi.hf.space/people')
+      .then(r => r.json())
+      .then(data => { knownPeople = (data && data.ok && data.people) ? data.people : []; })
+      .catch(() => { knownPeople = []; })
+      .finally(() => { peopleFetchPromise = null; });
+  }
+
+  function currentAttendeeToken(input){
+    const parts = input.value.split(',');
+    return parts[parts.length - 1].trim();
+  }
+
+  function hideSuggestions(){
+    const box = document.getElementById('afSuggestions');
+    box.classList.remove('visible');
+    box.innerHTML = '';
+  }
+
+  function renderSuggestions(matches){
+    const box = document.getElementById('afSuggestions');
+    if (!matches.length) { showNoMatchHint(); return; }
+    box.innerHTML = matches.slice(0, 6).map(p =>
+      `<div class="af-suggestion" data-name="${(p.name||'').replace(/"/g,'&quot;')}">
+         <span>${p.name}</span><span class="role">${p.role||''}</span>
+       </div>`
+    ).join('');
+    box.classList.add('visible');
+    box.querySelectorAll('.af-suggestion').forEach(el => {
+      el.addEventListener('mousedown', (e) => { e.preventDefault(); selectSuggestion(el.getAttribute('data-name')); });
+      el.addEventListener('touchstart', (e) => { e.preventDefault(); selectSuggestion(el.getAttribute('data-name')); }, { passive:false });
+    });
+  }
+
+  // Si no hay ninguna persona registrada que coincida, el campo NO se
+  // bloquea — se avisa que puede escribirse un email/nombre a mano. Esta
+  // pista es de solo lectura (no tiene listener de click ni le quita foco).
+  function showNoMatchHint(){
+    const box = document.getElementById('afSuggestions');
+    box.innerHTML = '<div class="af-suggestion af-hint">Sin coincidencias — puedes escribir el correo o nombre completo a mano</div>';
+    box.classList.add('visible');
+  }
+
+  function selectSuggestion(name){
+    const input = document.getElementById('afAttendees');
+    const parts = input.value.split(',');
+    parts[parts.length - 1] = ' ' + name;
+    input.value = parts.join(',').replace(/^\s+/, '') + ', ';
+    hideSuggestions();
+    input.focus();
+  }
+
+  const afAttendeesInput = document.getElementById('afAttendees');
+  afAttendeesInput.addEventListener('input', () => {
+    const token = currentAttendeeToken(afAttendeesInput);
+    if (!token || !knownPeople) { hideSuggestions(); return; }
+    const q = token.toLowerCase();
+    renderSuggestions(knownPeople.filter(p => p.name && p.name.toLowerCase().includes(q)));
+  });
+  afAttendeesInput.addEventListener('blur', () => {
+    setTimeout(hideSuggestions, 150); // deja tiempo al click en la sugerencia
+  });
+
+  // ── Conexión al robot (mismo WebSocket que usa index.html) ──
+  function ensureAgendaWs(onReady, onFail){
+    if (agendaWs && agendaWs.readyState === WebSocket.OPEN) { onReady(); return; }
+    if (agendaWs) { try { agendaWs.close(); } catch(e){} }
+    let ws;
+    try { ws = new WebSocket('ws://localhost:8080'); }
+    catch(e) { onFail(); return; }
+    agendaWs = ws;
+    const timeout = setTimeout(onFail, 6000);
+    ws.onopen = () => { clearTimeout(timeout); onReady(); };
+    ws.onerror = () => { clearTimeout(timeout); onFail(); };
+    ws.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.action === 'crearReunion') handleAgendaResult(data);
+      } catch(err) {}
+    };
+  }
+
+  function submitAgenda(){
+    const subject = document.getElementById('afSubject').value.trim();
+    const start = document.getElementById('afStart').value;
+    const attendeesRaw = document.getElementById('afAttendees').value.trim();
+    const feedback = document.getElementById('afFeedback');
+
+    if (!subject) { feedback.textContent = 'Escribe el asunto de la reunión.'; feedback.className = 'af-feedback err'; return; }
+    if (!start)   { feedback.textContent = 'Elige fecha y hora de inicio.';    feedback.className = 'af-feedback err'; return; }
+
+    const attendees = attendeesRaw ? attendeesRaw.split(',').map(a => a.trim()).filter(a => a) : [];
+
+    const btn = document.getElementById('afSubmitBtn');
+    btn.disabled = true; btn.textContent = 'Agendando...';
+    feedback.textContent = ''; feedback.className = 'af-feedback';
+
+    ensureAgendaWs(
+      () => { agendaWs.send(JSON.stringify({ action:'crearReunion', subject, start, attendees })); },
+      () => {
+        btn.disabled = false; btn.textContent = '📅 Agendar';
+        feedback.textContent = 'No se pudo conectar con el robot. Intenta de nuevo.';
+        feedback.className = 'af-feedback err';
+      }
+    );
+  }
+
+  function handleAgendaResult(data){
+    const btn = document.getElementById('afSubmitBtn');
+    const feedback = document.getElementById('afFeedback');
+    btn.disabled = false; btn.textContent = '📅 Agendar';
+    if (data.status === 'ok') {
+      feedback.textContent = `✅ Reunión "${data.subject}" agendada.`;
+      feedback.className = 'af-feedback ok';
+      setTimeout(closeAgendaModal, 1600);
+    } else {
+      feedback.textContent = '❌ ' + (data.message || 'No se pudo agendar la reunión.');
+      feedback.className = 'af-feedback err';
+    }
+  }
+</script>
+</body>
+</html>
