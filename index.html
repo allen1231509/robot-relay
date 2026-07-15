@@ -479,15 +479,11 @@
     const RELAY_SECRET = 'mirobotclave2024';
     const CAM_W = 640, CAM_H = 480;
 
-    // URL base del backend M365 (zoxirobit-m365, Node/Express + Graph API).
-    // Este panel puede abrirse desde cualquier lugar sin que el robot esté
-    // cerca, así que "Agendar" pega directo a este backend por HTTP en vez
-    // de pasar por el WebSocket del robot. Configurable: cambiar cuando el
-    // backend esté desplegado en un host público (localhost solo sirve para
-    // pruebas en la misma máquina — y si este panel corre sobre https, el
-    // backend también deberá servirse por https, o el navegador bloqueará
-    // el fetch por contenido mixto).
-    const M365_BASE_URL = 'http://localhost:3000';
+    // URL base del backend M365 (zoxirobit-m365, Node/Express + Graph API),
+    // en producción en Render. Este panel puede abrirse desde cualquier lugar
+    // sin que el robot esté cerca, así que "Agendar" pega directo a este
+    // backend por HTTP en vez de pasar por el WebSocket del robot.
+    const M365_BASE_URL = 'https://zoxirobit-m365.onrender.com';
 
     // Mapa PGM: resolución 0.05 m/px, tamaño y origen en coordenadas mundo
     const PGM_RESOLUTION = 0.05;
